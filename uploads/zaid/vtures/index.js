@@ -28,8 +28,7 @@ function reqErr(html) {
     return 1;
 }
 
-const gettingData = (usn, frontData)=>{
-     
+const gettingData = (usn, frontData)=>{     
     fetchData.fetchData(usn, frontData)
         .then((data)=>{
             if(reqErr(data) === 0) {

@@ -4,7 +4,9 @@ const path = require('path');
 const fs = require('fs')
 const fse = require('fs-extra')
 const dirTree = require('directory-tree')
-
+const mysql = require('mysql')
+const ncp = require('ncp').ncp
+const dirToJson = require('./lib/dirToJson')
 
 var conn = mysql.createConnection({
     host: "localhost",
@@ -20,7 +22,7 @@ app.listen(8000, ()=> {
 app.post('/create', (req, res) => {
     var uname = "zaid"
     var repoName = "vtures";
-    var repoLocation = "z:/vtures"
+    var repoLocation = "F:/Code/Sources/Node/vtures"
     if (!fs.existsSync(`uploads/${uname}`)){
         fs.mkdirSync(`uploads/${uname}`);
     }
@@ -28,33 +30,49 @@ app.post('/create', (req, res) => {
         fs.mkdirSync(`uploads/${uname}/${repoName}`);
     }
     var currDir = `uploads/${uname}/${repoName}`
-    fse.copy(repoLocation, currDir, function (err) {
-        if (err)
-            throw err
+    ncp(repoLocation, currDir, function (err) {
+        if (err){
+			res.status(500).json({msg: "Some error"});
+			console.log(err)
+		}		
         else{
-            const tree = dirTree(currDir);
-            console.log("tree", tree)
-            stringTree = JSON.stringify(tree)
-            res.send(stringTree)
-        }
-        
+			res.status(200).json({msg:"sucess"});
+			const tree = dirToJson(currDir)
+				.then(data => {
+					// console.log(JSON.stringify(data))
+					temp = JSON.stringify(data)
+					var sql = `select uid from user where uname = '${uname}'`
+    				conn.connect((err) => {
+						if(err) throw err;
+						conn.query(sql, (err, result) => {
+							if(err) throw err
+							var uid = result[0].uid;
+							sql = `INSERT INTO repo (uid, template) VALUES ('${uid}', '${temp}')`;
+							conn.query(sql,(err, result) => {
+								if(err) throw err;
+								console.log(result)
+							})
+						})
+					})
+				});            
+		}        
     });
 })
 
-app.get('./auth', (req, res) => {
+app.get('/auth', (req, res) => {
     res.send(",fdf,kjkdfj")
 })
 
-app.get('./redirect', (req, res) => {
+app.get('/redirect', (req, res) => {
     res.send("dflkjgdlfkgdl;fkj")
 })
 
-app.get('./createRepo', (req, res) => {
+app.get('/createRepo', (req, res) => {
 
 })
 
-app.get('./editTemplate', (req, res) => {
-    
+app.get('/template', (req, res) => {
+
 })
 
 app.post('/signUp', (req, res) => {
