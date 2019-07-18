@@ -11,11 +11,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-var conn = mysql.createConnection({
+var pool = mysql.createPool({
     host: "localhost",
     user: "root",
     upass: "",
-    database: "PRA"
+    database: "PRA"WWWW
 });
 
 app.listen(8000, ()=> {
@@ -45,22 +45,22 @@ app.post('/create', (req, res) => {
 					// console.log(JSON.stringify(data))
 					temp = JSON.stringify(data)
 					var sql = `select uid from user where uname = '${uname}'`
-    				conn.connect((err) => {
-						if(err) throw err;
-						conn.query(sql, (err, result) => {
+    				// conn.connect((err) => {
+						// if(err) throw err;
+						pool.query(sql, (err, result) => {
 							if(err) throw err
 							var uid = result[0].uid;
 							sql = `INSERT INTO repo (uid, template, templateName) VALUES ('${uid}', '${temp}', '${repoName}')`;
-							conn.query(sql,(err, result) => {
+							pool.query(sql,(err, result) => {
 								if(err) throw err;
 								// console.log(result)
-								conn.end((err) => {
-									if(err) throw err
+								// conn.end((err) => {
+									// if(err) throw err
 									res.sendFile(path.join(__dirname+'/public/success.html'))
-								});
+								// });
 							})
 						})
-					})
+					// })
 				});            
 		}        
 	});
@@ -71,14 +71,14 @@ app.post('/listTemps', (req, res) => {
 	var uname = req.body.uname
 	// console.log(uname)
 	var sql = `select uid from user where uname = '${uname}'`
-	conn.connect((err) => {
-		if(err) throw err;
-		conn.query(sql, (err, result) => {
+	// conn.connect((err) => {
+		// if(err) throw err;
+		pool.query(sql, (err, result) => {
 			if(err) throw err
 			var uid = result[0].uid;
 			sql = `select templateName from repo where uid = ${uid}`
 			console.log(uid)
-			conn.query(sql, (err, result)=>{
+			pool.query(sql, (err, result)=>{
 				if(err) throw err
 				// console.log(result)
 				arr = []
@@ -88,7 +88,7 @@ app.post('/listTemps', (req, res) => {
 				res.send(JSON.stringify(arr))
 			})
 		})
-	})
+	// })
 })
 
 app.post('/viewTemp', (req, res) => {
@@ -96,19 +96,19 @@ app.post('/viewTemp', (req, res) => {
 	var templateName = req.body.templateName
 	console.log("templateName", templateName)
 	var sql = `select template from repo where templateName = '${templateName}'`
-	conn.connect((err) => {
-		conn.query(sql, (err, result) => {
+	// conn.connect((err) => {
+		pool.query(sql, (err, result) => {
 			if(err) throw err
 			// console.log(result[0])
 			var template = result[0].template;
-			conn.end((err) => {
-				if(err) throw err
+			// ((err) => {
+				// if(err) throw err
 				// console.log(template)
 				res.send(JSON.stringify(template))
-			})
+			// })
 			
 		})
-	})
+	// })
 })
 
 app.get('/redirect', (req, res) => {
@@ -128,14 +128,14 @@ app.get('/template', (req, res) => {
 // 	var uname = req.body.uname;
 // 	var upass = req.body.upass;
 // 	var check = `SELECT * FROM users WHERE uname = \'${uname}\'`;
-// 	conn.query(check, (err, che) => {
+// 	pool.query(check, (err, che) => {
 // 		if(err) {
 // 			res.status(500).json({msg: "Some error"});
 // 			throw err;
 // 		} 
 // 		if(che.length == 0) {
 // 			var sql = `INSERT INTO users (uname, upass) VALUES (\'${uname}\', \'${upass}\')`;
-// 			conn.query(sql, (err, result) => {
+// 			pool.query(sql, (err, result) => {
 // 				if (err) {
 // 					res.sendStatus(500);
 // 					throw err;
@@ -154,7 +154,7 @@ app.get('/template', (req, res) => {
 // 	var uname = req.body.uname;
 // 	var upass = req.body.upass;
 // 	var sql = `SELECT * FROM users WHERE uname = \'${uname}\'`;
-// 	conn.query(sql, (err, result) => {
+// 	pool.query(sql, (err, result) => {
 // 		if (err) throw err;
 // 		if(result[0].upass == upass) {
 // 			res.send("correct");
