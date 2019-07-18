@@ -6,7 +6,7 @@ document.getElementById("nav").innerHTML += `
         </div>
         <ul class="nav navbar-nav">
         <li class="active"><a href="./addTemp.html">Add Template</a></li>
-        <li><a href="./viewTemp.html">View Template</a></li>
+        <li><a href="./listTempName.html">List Templates</a></li>
         </ul>
     </div>
 </nav>`

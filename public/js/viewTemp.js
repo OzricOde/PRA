@@ -1,9 +1,8 @@
-var jsonString = `{"name":"vtures","entries":[{"name":".git","entries":[{"name":"COMMIT_EDITMSG"},{"name":"config"},{"name":"description"},{"name":"FETCH_HEAD"},{"name":"HEAD"},{"name":"hooks","entries":[{"name":"applypatch-msg.sample"},{"name":"commit-msg.sample"},{"name":"fsmonitor-watchman.sample"},{"name":"post-update.sample"},{"name":"pre-applypatch.sample"},{"name":"pre-commit.sample"},{"name":"pre-push.sample"},{"name":"pre-rebase.sample"},{"name":"pre-receive.sample"},{"name":"prepare-commit-msg.sample"},{"name":"update.sample"}]},{"name":"index"},{"name":"info","entries":[{"name":"exclude"}]},{"name":"logs","entries":[{"name":"HEAD"},{"name":"refs","entries":[{"name":"heads","entries":[{"name":"master"}]},{"name":"remotes","entries":[{"name":"origin","entries":[{"name":"HEAD"},{"name":"master"}]}]}]}]},{"name":"objects","entries":[{"name":"00","entries":[{"name":"244fec0c32c5beaaa37fc556456754058d23f1"},{"name":"fdb9ef0e7d05d3ab07d666d5637e0950eb3cc7"}]},{"name":"01","entries":[{"name":"64b6a6af59718f2fa95185e2c555334e98df60"}]},{"name":"03","entries":[{"name":"865c7baa657a66f5a51ddb86716412249fd37f"}]},{"name":"04","entries":[{"name":"c76da4f65f151ddf86b506e18a8fffa35ca0a9"}]},{"name":"06","entries":[{"name":"31c507c4c4990f3f79f7064ab0765c9378b830"},{"name":"b8faf6f039c1065c8178a14d73715c3ac56213"}]},{"name":"09","entries":[{"name":"2a4cd5f4593dfd1686d7319f5a56fb25f31683"}]},{"name":"0c","entries":[{"name":"13ca009b63af2ad83c3e8fb47ccac0812b95f6"}]},{"name":"0d","entries":[{"name":"29473c1affb2c0368395145be4f2cbb9c880fa"},{"name":"986d308c9c7a9cec0d42bb726ac04c67a403ea"},{"name":"9e9fe732ce38089ad207b26f1e2cd1cac56c64"}]},{"name":"11","entries":[{"name":"1d01e73a4c60f60ae66e23b8c23d3f10d10400"},{"name":"2dc2df3faf5f7f2c43f2c804a56557c2711a50"}]},{"name":"13","entries":[{"name":"bdd06340d562616496f069521e7bd6e9c3b189"},{"name":"c53c97e7ef7aa8789b9bb5fb554b85fad43cf9"}]},{"name":"16","entries":[{"name":"d7582317b0b808682c05d2700ec755bd42998c"}]},{"name":"19","entries":[{"name":"7412ba1bfad8ad492f9a1d1979834bd0fa6a56"}]},{"name":"1b","entries":[{"name":"82a1043f404b13dfaa1ac5a3986ceba88dd97a"},{"name":"be3639c1ffe60f2260b9933559b848eb2e11f4"}]},{"name":"1c","entries":[{"name":"58d0d3aa9be1854737d67747e7b16c403dcfdd"},{"name":"64f55e2d7b92de4414f3eecb24d8d6f1562d6d"}]},{"name":"1d","entries":[{"name":"e9ef99ff4857a8a6f9a9cfeae00f797c1010d0"}]},{"name":"1e","entries":[{"name":"3012a1db7b7918a45978296aa3f394bf70b2c1"},{"name":"42b3e20f83672915d8ac9b49f70ca6a22cef0b"}]},{"name":"21","entries":[{"name":"6976b722472d77fb2244c70ca81affd58584d7"}]},{"name":"25","entries":[{"name":"5f0285f6356b8cea792b2035aadee7b6ce8b21"},{"name":"7c6598046898db71219dfb7c59542fb3dee4f1"},{"name":"9ecdcc7b1ec1804abd57747a911fb1b95409ae"}]},{"name":"27","entries":[{"name":"a36beed87dfded41c656d98345505856d4052a"}]},{"name":"28","entries":[{"name":"2f65ff5c22e6c325405bfd8b0e3f94f35ff0f7"}]},{"name":"2a","entries":[{"name":"9bd5a9b8fe4db4cc8b606ff330f92a1a3bc7e3"},{"name":"fe5019823a0833a76c77484080c34cdb52881d"}]},{"name":"2b","entries":[{"name":"8625444ee507544e86fa965a1687ba03ff50b1"}]},{"name":"2c","entries":[{"name":"e9380d38fed8378d67debd05f349c646b140ff"}]},{"name":"2e","entries":[{"name":"16d25a716aaa885852a44c4867fc7c25bbbd3f"}]},{"name":"30","entries":[{"name":"5328b5ecd8ecd59695b5c91ca9a940b5ace186"}]},{"name":"31","entries":[{"name":"06b7ff09e4e86dfb0f4548af139b3c5e68f5e3"},{"name":"098cfb063f77b12c5312fe8ca66f6eef33ba9d"}]},{"name":"32","entries":[{"name":"f851099dd1c76a58efc1a0a20f7a017fcd8df0"}]},{"name":"35","entries":[{"name":"bf173f6b8d03ddf0927fcb84b5711495eaf4cb"}]},{"name":"36","entries":[{"name":"9caeb11d2de00aae4bd8ee69a4f15998e02244"}]},{"name":"38","entries":[{"name":"51546e5a85b67af3e629571d2c9a5525a08cc3"},{"name":"680d77876f10148413625bb018c4914496b39e"},{"name":"fa039dab029926f50d27d0e8ead7e562e80c19"}]},{"name":"39","entries":[{"name":"85feb6ef5e05e327fd1ee6786008d2b20708da"}]},{"name":"3b","entries":[{"name":"89a0af32d7708e4ea3932e910eab5fe21f0605"},{"name":"c08108d85c5cb1d6ef8049484e29d2ff8e089c"}]},{"name":"3c","entries":[{"name":"7fc852f0f977f39661a68fd88e4ba2d344020b"},{"name":"81b27f0fb256e44be2314a724a7b414f30bb30"}]},{"name":"42","entries":[{"name":"50a15b67aba0532411a859ffb152b298f5a885"},{"name":"5aeec2b12a3a8438412855550c98eeb001bedf"}]},{"name":"45","entries":[{"name":"2ee44135c3192ed96936db092867c4ed2a30c2"},{"name":"92624e6a5046c01cec4a1d0de5030889b86cf9"}]},{"name":"49","entries":[{"name":"062e18d42d73d2b29265c31ae76607fe2fc872"},{"name":"1f48bf419a86a8e32d78f68b02d2b4a2f2d853"}]},{"name":"4a","entries":[{"name":"1518fa25aaa689052be3f0d80651d1e997945b"}]},{"name":"4c","entries":[{"name":"1c4342401ab241b768b96576c1a74681624976"},{"name":"2293505fce2eb3720c89991ec08e426348a25e"}]},{"name":"4e","entries":[{"name":"d10bcdd7853f4cd59915ad30370fcd51aa83d6"},{"name":"f47f2e53c804758f59edd4f0c69848929f3397"}]},{"name":"52","entries":[{"name":"97374e076119fd242c2c0d63c0b111f2e05eb1"}]},{"name":"53","entries":[{"name":"2f95aba5655909cc18d7af2ef1173b56ee6170"},{"name":"bf6bab2ab80847ea1d08c0e19f270ee94620ea"}]},{"name":"54","entries":[{"name":"31004a7ce2d05341abe0ebcdf69902ecf8e7c0"}]},{"name":"57","entries":[{"name":"50aa6346f19c38d5feb3b5273970ab98f7cf02"},{"name":"682da62e2037230bd2ce1236003709937efe07"}]},{"name":"5c","entries":[{"name":"22c17d2fba831a0158819df47bb228853e9b64"},{"name":"23f9b66e4b6dd016d62427c4e1160c3799176a"}]},{"name":"5d","entries":[{"name":"3d243bfb1b58a1a3c1354ac966366913db93d0"}]},{"name":"60","entries":[{"name":"76505552f1b6265d643bf382ad71530841da06"}]},{"name":"61","entries":[{"name":"391f1d7dbf37be9b5d87e812471b203c69c0be"},{"name":"6de8151577ffb32bf568ff28f0b7b76d76eebe"},{"name":"d048ca153d29465592d122733889322063aa63"},{"name":"dc303ff3743c7be765657bc5a878a737b78e34"}]},{"name":"62","entries":[{"name":"25cf0ed2cb5bb9a50778eb865eebf06e200db5"},{"name":"7316b04804b4853c3719aa3b8afad7fbceae13"},{"name":"cf8a5bf158b5466f746568426b0d7555267b31"}]},{"name":"63","entries":[{"name":"bce8a06ca9b64df918e7aea2873d239e507088"}]},{"name":"64","entries":[{"name":"76d1e4ea86ea9b071f1eec1c4f3779538ddadf"}]},{"name":"65","entries":[{"name":"2799fae904d54162223b4620a93ac594986cdd"},{"name":"3aa7469f2bef26eadec7c78dc3ccd12ee1778a"},{"name":"cf591ad6f9e894804eadab38f8ecefc7ec18cb"},{"name":"df88723fda5c6152b29ed01e55c0be212ff7e8"}]},{"name":"67","entries":[{"name":"bbb7b5b133a7eeb572259796410f7dc74c7933"}]},{"name":"68","entries":[{"name":"795f371a568d369c785f49e1e16d53ab58f217"}]},{"name":"6a","entries":[{"name":"39cc79861a2b1e4f78fe5a6d94b7faee41defa"}]},{"name":"6b","entries":[{"name":"92f489bb5a50e232a337db974c21886da647c9"}]},{"name":"6d","entries":[{"name":"b7f9a000231d3955fb8ecf886c0e18cdaa5882"}]},{"name":"6f","entries":[{"name":"e0a7ad9d3f8f3e1f314294d538c059d04e43d1"}]},{"name":"70","entries":[{"name":"f2dc70aa731d48bc2070584545e9da161d2fc4"}]},{"name":"71","entries":[{"name":"ae161f9b50c7f29686f520516435187028043c"}]},{"name":"72","entries":[{"name":"9c7c9ab9f0cdc193b4dc2471d3f8a43624b166"},{"name":"a7ce0286ab484196db495b03c367d2e9801f84"}]},{"name":"73","entries":[{"name":"d6c9ac85d93692aa9c4a1326094e3a84cf10dc"}]},{"name":"75","entries":[{"name":"359cbc8ceb6bbbe4ae4d00ca46845fee7c2221"}]},{"name":"77","entries":[{"name":"eddb3f1eeb44f92836e8ca0dc33cdea99c2afd"}]},{"name":"79","entries":[{"name":"522465db3da64a256a5683a399f36f5987ace5"}]},{"name":"7a","entries":[{"name":"9d8cad93cab3ac4e6b24d3414177d152cc0bef"},{"name":"a9cb95d3d4132ef43e4adbb4aba2a7646154b5"},{"name":"ff139e0a45401a284d41cf32a4bdf2e7487bcf"}]},{"name":"7d","entries":[{"name":"a82906d3e357b8f68b908393af533af40c1de6"}]},{"name":"7f","entries":[{"name":"da633542083fa32b8e1b4cd32f6695a32c4f90"},{"name":"ebb678f987fb15858a37e9e002d2d218180a4f"}]},{"name":"80","entries":[{"name":"f2d2acfe6ecab1fb4c7fad2cf812c0813dfead"}]},{"name":"84","entries":[{"name":"8854baeabbe5a53d86ac4d5137f3ff0acd6a64"}]},{"name":"86","entries":[{"name":"7b192cb4252ac04e8f80bd80c9fe3dfb0d2997"},{"name":"86bbe4c68869c3ccfeae3c75bfe4fb2c1b91d5"}]},{"name":"87","entries":[{"name":"7705640127d8c8f7da422ffb4ea837e7d37148"}]},{"name":"8a","entries":[{"name":"6c2731546638fb3e4feadd8c0bbbde4d966b99"}]},{"name":"8b","entries":[{"name":"80b0e68155e7abe277d4d6a9d0a5b9bee46410"}]},{"name":"91","entries":[{"name":"ddc9a7473269fc1e15318cb849079def6a51b5"}]},{"name":"93","entries":[{"name":"804f4dd55106685d0573c749c8be58bbd5422e"}]},{"name":"95","entries":[{"name":"c5b224423afb3879725b3b93895cd7d33654ab"}]},{"name":"96","entries":[{"name":"ccc07547b06c1e549a5e0c07c79f6195aea1b0"},{"name":"d09f202b944c209483d6eef9d25c08ebae4897"}]},{"name":"98","entries":[{"name":"156027ce49b0ca537b65aa351ab9bee5ea2037"},{"name":"34092aa98d9fd8b683a7c027a78593fbeead49"}]},{"name":"99","entries":[{"name":"70ce49090d7107e88f8717ac39c9457750ed20"}]},{"name":"9a","entries":[{"name":"0e5565d84888b75c640491c8befac56ac17659"}]},{"name":"9b","entries":[{"name":"63747a0b5ce523174a5d318587805c0706827a"},{"name":"8d9f69e5676117de939e8d119720db1287c407"},{"name":"e2d8439a1c7d78e4d87026d48b40c55a3a1dc5"},{"name":"f7a5e6c91f5dcdbdc022ae03fbcfb72d5a12e8"}]},{"name":"9c","entries":[{"name":"1da5c1a2649b057fab20191be7813a23bd15f9"}]},{"name":"9e","entries":[{"name":"d12a27cd3098622ece85be28f411f77ff5e252"}]},{"name":"a0","entries":[{"name":"f29d3a195578982048fe76f02172d187bbc765"}]},{"name":"a1","entries":[{"name":"385b69c05911ba08c623ddcae5295ce7aac501"},{"name":"630625811651d6344a796212317a40525e71a7"}]},{"name":"a2","entries":[{"name":"ecfb4b7ca46cbf3fdefce0ecee03cec6c4a70a"}]},{"name":"a7","entries":[{"name":"f86b194c560f86f8190bd7990f2ae92fe9630a"}]},{"name":"a9","entries":[{"name":"27bd624c362d93b56cb0fdbcf24230f287b9da"},{"name":"73264f9d8fee9991bca6deb6faabeb8c5444a0"}]},{"name":"aa","entries":[{"name":"f972330824cdedc60dee8f050e1a37f0da8b95"}]},{"name":"ab","entries":[{"name":"c3b2b5b262c05ef1affd19fd640ed8ad8364dc"}]},{"name":"ae","entries":[{"name":"e589e0c2dbb92d702c7423db0c92235062366f"}]},{"name":"af","entries":[{"name":"08cb5cc781af069f5dbd7dc7c39751d44dcf8e"}]},{"name":"b0","entries":[{"name":"5d3278bf8ba1dcf0211158dbab7854a28d9182"}]},{"name":"b2","entries":[{"name":"92e2bd23b810c41511df5aea5f190076bda2d3"},{"name":"ae59440782942534f12ce28926b368b6f12771"}]},{"name":"b3","entries":[{"name":"2bb4f39b1d0d75733c5ee6446ad0fefd8cbc89"}]},{"name":"b4","entries":[{"name":"1407e4ecced3732420e2835d8fc2beb799cc59"}]},{"name":"b5","entries":[{"name":"68f105e569f4c8299e50cc4d414c843f8e4e37"},{"name":"99899f31839ac0de50afc8fea08670a7c7e024"},{"name":"a11fff60730ded5065c48a8a37411adb3d42ee"}]},{"name":"b7","entries":[{"name":"13dfaf4cd6a15969b7f79ecee8425f6901cfc1"},{"name":"22aed8b6b4631fbeefd93809c5b80fdc15ba9f"},{"name":"2e947315163fd13b332829e18b3e69c1b5c621"}]},{"name":"ba","entries":[{"name":"89c7a36e119e56c6cd0b66f8fd42cc2a1a0e72"}]},{"name":"bc","entries":[{"name":"2462eaac5c7c02a90fc250b71eae6b85a016e8"},{"name":"45f6ab9c7247dc2bde6539ef0434c2dd19f772"}]},{"name":"bd","entries":[{"name":"793bf9a9c8ef2a2599cc9a5ec5fbc52c5fb435"}]},{"name":"be","entries":[{"name":"b6f40bd8041422f3eea80f3e44af57f95066a3"}]},{"name":"c1","entries":[{"name":"3d57d09667987872b003d0291773fa7674d74c"},{"name":"52bc6e3341334f94957d01ce8220367b1b278e"},{"name":"6712c2ba85543ec82445adf7bf324a75c6971b"}]},{"name":"c3","entries":[{"name":"f24b2adaa3dcf4aafceebe646832749dd40790"}]},{"name":"c4","entries":[{"name":"ea7614bfb013142630715ae03da00db4c2dd26"}]},{"name":"c5","entries":[{"name":"0bbce1b84d7ee2d9c97723d9c5bfaf826e1c65"},{"name":"22036d0de0a2cefee33f1159dc341d55cee1e7"}]},{"name":"c6","entries":[{"name":"8f150d1fa00e613af477f76e5a183c5432e672"}]},{"name":"c9","entries":[{"name":"7e8545e6b26211b8afbea71f3b5d8d7acf8d6b"}]},{"name":"ce","entries":[{"name":"7d6a98ca3aa2294ed717f8353c2e00c5ed516d"}]},{"name":"cf","entries":[{"name":"c0f9ec679a843221983583e13213708eb92e37"}]},{"name":"d0","entries":[{"name":"1fb75b82d118ab21da013768c194a7490d5180"},{"name":"52d275cac6c7a52fa6c1b66c9150a2dd7f2cb0"}]},{"name":"d4","entries":[{"name":"05a7d70ba09bc57236ccc3cace491522a8d33b"},{"name":"5dc1929fecbca2f70478000e1e9f23009aca5e"},{"name":"8916c1f4c5013c553ec7733475ef043c0e356b"}]},{"name":"d7","entries":[{"name":"af6b758e6445895b5ed96d7da5d0da44eca630"}]},{"name":"da","entries":[{"name":"8cdac18454a2fd1c759717c0b464f376405dfe"},{"name":"f83320b516f3453ad6929883e3558dcf5f396d"}]},{"name":"de","entries":[{"name":"8aaa83c79ce53b18f62a622e89649166248de2"}]},{"name":"e1","entries":[{"name":"675c6249636e42a17aa49e5926d518b6972804"}]},{"name":"e2","entries":[{"name":"54cc46fe7b34aacc21faefd7373aae97ac3d6d"},{"name":"f234d275daf366e936bc7b44b1115fd13d310a"}]},{"name":"e3","entries":[{"name":"e7e128d5550755fadfc43a5733ffd6c22f4300"}]},{"name":"e4","entries":[{"name":"239aa28c0922a789e870d55126eea091627f94"}]},{"name":"e5","entries":[{"name":"ac133f8064d69b67ea2a1f0856f1fbcb6c1eb4"}]},{"name":"eb","entries":[{"name":"45a17fabc283d547da18b5c46eabcdf30bbc20"}]},{"name":"ed","entries":[{"name":"d873d76d4cc35085d3318b3a1fd3654d20d68e"}]},{"name":"f0","entries":[{"name":"43898c88d3e6b8b01cbcf2ede8ae1348db569a"}]},{"name":"f1","entries":[{"name":"3f20df2e5e670d14c7f3abf1ded0f4f0d54ec2"}]},{"name":"f4","entries":[{"name":"aa0a4e346d0c5aa9b9e1c1dc2f6af4cc9a0c95"}]},{"name":"f8","entries":[{"name":"8e65bc125b7e36176689d3786167e01df18e1e"},{"name":"9ec2194c0f145fe8a0b8314916ae63e95e61d0"}]},{"name":"f9","entries":[{"name":"c4b69da783ea603814adebf30b6a6edadd85d8"}]},{"name":"fa","entries":[{"name":"bbae0da5987c1d524c8e113f3b3b88f702b831"}]},{"name":"fc","entries":[{"name":"17405af5c45faa8fc109964a9e6d36e442f1fb"}]},{"name":"fe","entries":[{"name":"dc262ccc41fa29f0b0fc7ce6628378805e6c48"}]},{"name":"ff","entries":[{"name":"5ba15695d49838fe4d7161ed2e2d8b9e50dc63"}]},{"name":"info","entries":[]},{"name":"pack","entries":[{"name":"pack-664c97d8f72a1e49a54866577e913bab0ec69286.idx"},{"name":"pack-664c97d8f72a1e49a54866577e913bab0ec69286.pack"}]}]},{"name":"ORIG_HEAD"},{"name":"packed-refs"},{"name":"refs","entries":[{"name":"heads","entries":[{"name":"master"}]},{"name":"remotes","entries":[{"name":"origin","entries":[{"name":"HEAD"},{"name":"master"}]}]},{"name":"tags","entries":[]}]}]},{"name":".gitignore"},{"name":"2A.csv"},{"name":"2B.csv"},{"name":"4A.csv"},{"name":"4B.csv"},{"name":"4C.csv"},{"name":"8A.csv"},{"name":"8B.csv"},{"name":"database","entries":[{"name":"addToDatabase.js"},{"name":"checkDatabase.js"},{"name":"checkTable.js"},{"name":"config.js"}]},{"name":"env.js"},{"name":"Even Sem 2018-19(31-01-19).xlsx"},{"name":"event.preventDefault())"},{"name":"fetch data.rar"},{"name":"fetchusn","entries":[{"name":"2A.csv"},{"name":"2B.csv"},{"name":"4A.csv"},{"name":"4B.csv"},{"name":"4C.csv"},{"name":"8A.csv"},{"name":"8B.csv"},{"name":"retrievecsv.js"},{"name":"test.csv"}]},{"name":"index.js"},{"name":"package-lock.json"},{"name":"package.json"},{"name":"public","entries":[{"name":"analytics.html"},{"name":"extractFailResponse.html"},{"name":"extractSuccessResponse.html"},{"name":"index.html"},{"name":"js","entries":[{"name":"downloadRequest.js"},{"name":"navbar.js"}]},{"name":"main.css"},{"name":"New Text Document.txt"}]},{"name":"scrapedata","entries":[{"name":"scrape.js"}]},{"name":"sendreq","entries":[{"name":"config.js"},{"name":"fetchData.js"}]},{"name":"server.js"},{"name":"test.csv.xlsx"},{"name":"toCsv","entries":[{"name":"addToCsv.js"},{"name":"createColumns.js"}]}]}`
-// var jsonString = `{"name":"skdhfkhsdf","entries":[{"name":"nestedFile"}]}`
-var json = JSON.parse(jsonString)
-
-function createId(name, parentId) {
-    return `${parentId}-${name}`
+function createId(name, parentId, iter) {
+    if(iter === undefined)
+        return `${parentId}-${name}`
+    else    
+        return `${parentId}-${iter}`
 }
 
 function folder(name, parentId){
@@ -13,18 +12,18 @@ function folder(name, parentId){
     return location
 }
 
-function file(name, parentId){
-    let location = createId(name, parentId)
+function file(name, parentId, iter){
+    let location = createId(name, parentId, iter)
     let html = `<li id=${location}>${name}</li>`
     document.getElementById(parentId).innerHTML += html
     return location
 }
 
-function traverse(jsonObj, parentId) {
+function traverse(jsonObj, parentId, iter) {
     if(jsonObj !== null && typeof jsonObj == "object" ){          
         if(jsonObj.constructor === Array){
             for(var i = 0; i < jsonObj.length; i++){
-                traverse(jsonObj[i], parentId);
+                traverse(jsonObj[i], parentId, i);
             }            
         }
         else{
@@ -33,7 +32,7 @@ function traverse(jsonObj, parentId) {
                 locationObj = folder(jsonObj.name, parentId)
             }
             else {
-                locationObj = file(jsonObj.name, parentId)
+                locationObj = file(jsonObj.name, parentId, iter)
             }
             traverse(jsonObj.entries, locationObj);
         }      
@@ -43,9 +42,45 @@ function traverse(jsonObj, parentId) {
     }
 }
 
-try{
-    traverse(json, "root") 
+function extractUrl() {
+    var url = document.location.href,
+    params = url.split('?')[1].split('&')
+    // console.log(params)
+    data = {}; 
+    var tmp;
+    for (var i = 0, l = params.length; i < l; i++) {
+            tmp = params[i].split('=');
+            data[tmp[0]] = tmp[1];
+    }
+    return data
 }
-catch(e){
-    console.log(e)
-}       
+
+function animate(){
+    console.log("running hopefully at end")
+    var toggler = document.getElementsByClassName("caret");
+        var i;
+        for (i = 0; i < toggler.length; i++) {
+            toggler[i].addEventListener("click", function() {
+                this.parentElement.querySelector(".nested").classList.toggle("active");
+                this.classList.toggle("caret-down");
+            });
+        }
+}
+
+function init(){
+    var param = extractUrl();
+    console.log(param)
+    // console.log("dict", param)
+    axios.post('http://localhost:8000/viewTemp',{templateName: param.repoName})
+        .then(response => {
+            var jsonString = response.data    
+            var json = JSON.parse(jsonString)
+            traverse(json, "root") 
+            animate()
+        })
+        .catch(err => {
+            console.log("man wtf", err)
+        })
+}
+    
+         
