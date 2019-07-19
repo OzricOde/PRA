@@ -6,6 +6,14 @@ const mysql = require('mysql')
 const ncp = require('ncp').ncp
 const dirToJson = require('./lib/dirToJson')
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const request = require('request');
+const qs = require('querystring');
+const url = require('url');
+const randomString = require('randomstring');
+require('dotenv').config();
+
+const redirect_uri = process.env.HOST + '/redirect';
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -15,12 +23,25 @@ var pool = mysql.createPool({
     host: "localhost",
     user: "root",
     upass: "",
-    database: "PRA"WWWW
+    database: "PRA"
 });
 
 app.listen(8000, ()=> {
     console.log('app listening at port 8000');
 });
+
+app.get('/', (req, res, next) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.use(
+	session({
+	  secret: randomString.generate(),
+	  cookie: { maxAge: 60000 },
+	  resave: false,
+	  saveUninitialized: false
+	})
+);
 
 app.post('/create', (req, res) => {
 	// console.log(req.body)
@@ -110,19 +131,6 @@ app.post('/viewTemp', (req, res) => {
 		})
 	// })
 })
-
-app.get('/redirect', (req, res) => {
-    res.send("dflkjgdlfkgdl;fkj")
-})
-
-app.get('/createRepo', (req, res) => {
-
-})
-
-app.get('/template', (req, res) => {
-
-})
-
 // app.post('/signUp', (req, res) => {
 // 	console.log(req.body);
 // 	var uname = req.body.uname;
@@ -150,16 +158,82 @@ app.get('/template', (req, res) => {
 // 	})	
 // })
 
-// app.post('/login', (req, res) => {
-// 	var uname = req.body.uname;
-// 	var upass = req.body.upass;
-// 	var sql = `SELECT * FROM users WHERE uname = \'${uname}\'`;
-// 	pool.query(sql, (err, result) => {
-// 		if (err) throw err;
-// 		if(result[0].upass == upass) {
-// 			res.send("correct");
-// 		} else {
-// 			res.sendStatus(401);
-// 		}
-// 	})
-// });
+app.get('/login', (req, res) => {
+	req.session.csrf_string = randomString.generate();
+	const githubAuthUrl =
+		'https://github.com/login/oauth/authorize?' +
+		qs.stringify({
+		client_id: process.env.CLIENT_ID,
+		redirect_uri: redirect_uri,
+		state: req.session.csrf_string,
+		scope: 'user:email'
+		});
+	res.redirect(githubAuthUrl);
+});
+
+app.all('/redirect', (req, res) => {
+    // Here, the req is request object sent by GitHub
+    console.log('Request sent by GitHub: ');
+    console.log(req.query);  
+    // req.query should look like this:
+    // {
+    //   code: '3502d45d9fed81286eba',
+    //   state: 'RCr5KXq8GwDyVILFA6Dk7j0LbFNTzJHs'
+    // }
+    const code = req.query.code;
+    const returnedState = req.query.state;  
+    if (req.session.csrf_string === returnedState) {
+		// Remember from step 5 that we initialized
+		// If state matches up, send request to get access token
+		// the request module is used here to send the post request
+		request.post({
+			url:
+			'https://github.com/login/oauth/access_token?' +
+			qs.stringify({
+				client_id: process.env.CLIENT_ID,
+				client_secret: process.env.CLIENT_SECRET,
+				code: code,
+				redirect_uri: redirect_uri,
+				state: req.session.csrf_string
+				})
+			},
+			(error, response, body) => {
+			// The response will contain your new access token
+			// this is where you store the token somewhere safe
+			// for this example we're just storing it in session
+			console.log('Your Access Token: ');
+			console.log(qs.parse(body));
+			req.session.access_token = qs.parse(body).access_token;
+	
+			// Redirects user to /user page so we can use
+			// the token to get some data.
+			res.redirect('/user');
+			}
+		);
+		} else {
+		// if state doesn't match up, something is wrong
+		// just redirect to homepage
+		res.redirect('/');
+    }
+});
+
+app.get('/user', (req, res) => {
+    // GET request to get emails
+    // this time the token is in header instead of a query string
+    request.get(
+      {
+        url: 'https://api.github.com/user/public_emails',
+        headers: {
+          Authorization: 'token ' + req.session.access_token,
+          'User-Agent': 'Login-App'
+        }
+      },
+      (error, response, body) => {
+        res.send(
+          "<p>You're logged in! Here's all your emails on GitHub: </p>" +
+          body +
+          '<p>Go back to <a href="/">log in page</a>.</p>'
+        );
+      }
+    );
+});
