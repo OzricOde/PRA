@@ -13,11 +13,13 @@ function extractUrl() {
 
 function handleClick() {
     var data = extractUrl();
+    console.log("data", data)
     var username = data.uname;
+    var token = data.token
     var repoName = document.getElementById('repoName').value
     var fileLocation = document.getElementById('fileLocation').value
     console.log("useraname", username, "reponame", repoName, "filelocation", fileLocation)
-    axios.post('http://localhost:8000/addTemp',{repoName: repoName, fileLocation:fileLocation, uname:username})
+    axios.post('http://localhost:8000/addTemp',{repoName: repoName, fileLocation:fileLocation, uname:username, token:token})
         .then(response => {
             console.log(response)
             if(response.data.status === 0)

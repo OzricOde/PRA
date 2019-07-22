@@ -3,13 +3,6 @@ function handleChange(event) {
     val = event.target.value
 }
 
-function createListItem(name) {
-    let html = `
-    <li><a href=./viewTemp.html?repoName=${name}>${name}</a></li>
-    `
-    document.getElementById("repoNameList").innerHTML +=  html
-}
-
 function extractUrl() {
     var url = document.location.href,
     params = url.split('?')[1].split('&')
@@ -23,8 +16,21 @@ function extractUrl() {
     return data
 }
 
+var data = extractUrl();
+
+function createListItem(name) {
+    var uname = data.uname;
+    var token = data.token
+    let html = `
+    <li><a href=./viewTemp.html?repoName=${name}&token=${token}&uname=${uname}>${name}</a></li>
+    `
+    document.getElementById("repoNameList").innerHTML +=  html
+}
+
+
+
 function handleClick(event) {
-    var data = extractUrl();
+    
     console.log(data)
     var uname = data.uname
     // console.log(email)
