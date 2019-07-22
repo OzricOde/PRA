@@ -11,6 +11,7 @@ const request = require('request');
 const qs = require('querystring');
 const url = require('url');
 const randomString = require('randomstring');
+const Octokit = require('@octokit/rest')
 require('dotenv').config();
 
 const redirect_uri = process.env.HOST + '/redirect';
@@ -43,7 +44,7 @@ app.use(
 	})
 );
 
-app.post('/create', (req, res) => {
+app.post('/addTemp', (req, res) => {
 	// console.log(req.body)
     var uname = req.body.uname
     var repoName = req.body.repoName
@@ -57,7 +58,7 @@ app.post('/create', (req, res) => {
     var currDir = `uploads/${uname}/${repoName}`
     ncp(repoLocation, currDir, function (err) {
         if (err){
-			res.sendFile(path.join(__dirname+'/public/failure.html'));
+			res.send({status:0});
 			console.log(err)
 		}		
         else{
@@ -77,7 +78,7 @@ app.post('/create', (req, res) => {
 								// console.log(result)
 								// conn.end((err) => {
 									// if(err) throw err
-									res.sendFile(path.join(__dirname+'/public/success.html'))
+									res.send({status:1});
 								// });
 							})
 						})
@@ -87,9 +88,10 @@ app.post('/create', (req, res) => {
 	});
 })
 
-app.post('/listTemps', (req, res) => {
+app.get('/listTemps', (req, res) => {
 	console.log("triggered list template")
-	var uname = req.body.uname
+	console.log(req)
+	var uname = req.query.uname
 	// console.log(uname)
 	var sql = `select uid from user where uname = '${uname}'`
 	// conn.connect((err) => {
@@ -166,26 +168,18 @@ app.get('/login', (req, res) => {
 		client_id: process.env.CLIENT_ID,
 		redirect_uri: redirect_uri,
 		state: req.session.csrf_string,
-		scope: 'user:email'
+		scope: 'user,repo'
 		});
 	res.redirect(githubAuthUrl);
 });
 
 app.all('/redirect', (req, res) => {
     // Here, the req is request object sent by GitHub
-    console.log('Request sent by GitHub: ');
-    console.log(req.query);  
-    // req.query should look like this:
-    // {
-    //   code: '3502d45d9fed81286eba',
-    //   state: 'RCr5KXq8GwDyVILFA6Dk7j0LbFNTzJHs'
-    // }
+    // console.log('Request sent by GitHub: ');
+    // console.log(req.query);  
     const code = req.query.code;
     const returnedState = req.query.state;  
     if (req.session.csrf_string === returnedState) {
-		// Remember from step 5 that we initialized
-		// If state matches up, send request to get access token
-		// the request module is used here to send the post request
 		request.post({
 			url:
 			'https://github.com/login/oauth/access_token?' +
@@ -198,42 +192,79 @@ app.all('/redirect', (req, res) => {
 				})
 			},
 			(error, response, body) => {
-			// The response will contain your new access token
-			// this is where you store the token somewhere safe
-			// for this example we're just storing it in session
 			console.log('Your Access Token: ');
 			console.log(qs.parse(body));
 			req.session.access_token = qs.parse(body).access_token;
-	
-			// Redirects user to /user page so we can use
-			// the token to get some data.
-			res.redirect('/user');
+			res.redirect(`/user/${req.session.access_token}`);
 			}
 		);
 		} else {
-		// if state doesn't match up, something is wrong
-		// just redirect to homepage
 		res.redirect('/');
     }
 });
 
-app.get('/user', (req, res) => {
-    // GET request to get emails
-    // this time the token is in header instead of a query string
-    request.get(
-      {
-        url: 'https://api.github.com/user/public_emails',
-        headers: {
-          Authorization: 'token ' + req.session.access_token,
-          'User-Agent': 'Login-App'
-        }
-      },
-      (error, response, body) => {
-        res.send(
-          "<p>You're logged in! Here's all your emails on GitHub: </p>" +
-          body +
-          '<p>Go back to <a href="/">log in page</a>.</p>'
-        );
-      }
-    );
+app.get('/user/:token', (req, res) => {
+    request.get({
+		url: 'https://api.github.com/user',
+		headers: {
+			Authorization: 'token ' + req.session.access_token,
+			'User-Agent': 'Login-App'
+    	}
+    },
+    (error, response, body) => {
+		console.log("hop ")
+		body = JSON.parse(body)
+		// console.log("body = =",body)
+		var uname = body.login;
+		var token = req.params.token
+		res.redirect(`/listAll/${uname}/${token}`)		
+    });
 });
+
+app.get('/listAll/:uname/:token', (req, res) => {
+	// console.log("triggered")
+	res.sendFile(path.join(__dirname+'/public/redirect.html'))
+})
+
+app.get('/createGit', (req,res) => {
+	//token
+	//owner
+	//repo
+	//path dfs
+	const octokit = new Octokit({
+		auth: 'token a571af79b98093e504a67da8bac840a748faa9ba'
+	})
+	octokit.repos.createOrUpdateFile({
+		owner : 'vanesssapearlss',
+		repo : 'aaa',
+		path : 'eee/rrr',
+		message: 'kjdkjdfb',
+		content : 'bXkgbmV3IGZpbGUgY29udGVudHM='
+	})
+})
+
+
+
+
+
+// octokit.repos.listForUser({
+//   username: 'vanesssapearlss',
+//   }).then(({ data }) => {
+//   console.log({data})
+// })
+
+
+
+// octokit.repos.createForAuthenticatedUser({
+//   name: 'bye',
+// })
+
+// octokit.repos.delete({
+//   owner : 'vanesssapearlss',
+//   repo : 'copy'
+// })
+
+
+
+
+

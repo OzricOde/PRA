@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+    redirecting...
+    <script>
+        var pathname = window.location.pathname;
+        var list = pathname.match(/[a-zA-Z0-9]+/gi);
+        var email = list[1]
+        var token = list[2]
+        console.log(list)
+        window.location.href = `http://localhost:8000/addTemp.html?uname=${email}&token=${token}`;
+    </script>
+</body>
+</html>
+
