@@ -1,5 +1,5 @@
 var val = ""
-function handleChange(event) {
+function handleChange(event) {    
     val = event.target.value
 }
 
@@ -10,8 +10,25 @@ function createListItem(name) {
     document.getElementById("repoNameList").innerHTML +=  html
 }
 
+function extractUrl() {
+    var url = document.location.href,
+    params = url.split('?')[1].split('&')
+    // console.log(params)
+    data = {}; 
+    var tmp;
+    for (var i = 0, l = params.length; i < l; i++) {
+            tmp = params[i].split('=');
+            data[tmp[0]] = tmp[1];
+    }
+    return data
+}
+
 function handleClick(event) {
-    axios.post('http://localhost:8000/listTemps',{uname: val})
+    var data = extractUrl();
+    console.log(data)
+    var uname = data.uname
+    // console.log(email)
+    axios.get(`http://localhost:8000/listTemps?uname=${uname}`,)
         .then(response => {
             var names = response.data    
             // var arr = JSON.parse(names)
