@@ -82,6 +82,7 @@ app.post('/addTemp', (req, res) => {
 })
 
 app.post('/gitSubmit', (req, res) => {
+	console.log("in git submit")
 	var token = req.body.token
 	var uname = req.body.uname
 	var templateName = req.body.templateName
@@ -92,7 +93,7 @@ app.post('/gitSubmit', (req, res) => {
 		if(err) res.send({status:0})
 		var template = result[0].template;
 		template = JSON.parse(template)
-		console.log("template", template)
+		// console.log("template", template)
 		jsonToDir.traverse(template, "", octokit, {uname,templateName, templateName});
 		res.send({status:1})
 	})
@@ -101,7 +102,7 @@ app.post('/gitSubmit', (req, res) => {
 
 app.get('/listTemps', (req, res) => {
 	console.log("triggered list template")
-	console.log(req)
+	// console.log(req)
 	var uname = req.query.uname
 	var sql = `select uid from user where uname = '${uname}'`
 	pool.query(sql, (err, result) => {
@@ -189,6 +190,7 @@ app.get('/user/:token', (req, res) => {
 });
 
 app.get('/listAll/:uname/:token', (req, res) => {
+	
 	res.sendFile(path.join(__dirname+'/public/redirect.html'))
 })
 
@@ -198,11 +200,7 @@ app.get('/listAll/:uname/:token', (req, res) => {
 //   console.log({data})
 // })
 
-
-
-// octokit.repos.createForAuthenticatedUser({
-//   name: 'bye',
-// })
+	
 
 // octokit.repos.delete({
 //   owner : 'vanesssapearlss',

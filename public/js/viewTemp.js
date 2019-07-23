@@ -86,6 +86,7 @@ function init(){
         .then(response => {
             var jsonString = response.data    
             var json = JSON.parse(jsonString)
+            console.log("starting taversing")
             traverse(json, "root") 
             animate()
         })
