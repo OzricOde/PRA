@@ -81,45 +81,49 @@ app.post('/addTemp', (req, res) => {
 	});
 })
 
-app.get('/createRepo', (req, res) => {
+app.post('/gitSubmit', (req, res) => {
 	var token = req.body.token
 	var uname = req.body.uname
-    var repoName = req.body.repoName
-	var repoLocation = req.body.fileLocation
-	const octokit = new Octokit({auth: `token ${token}`})
-	jsonToDir.traverse(data, "", octokit, {uname,repoName});
+	var templateName = req.body.templateName
+	const octokit = new Octokit({auth: `token ${token}`})	
+	
+	var sql = `select template from repo where templateName = '${templateName}'`
+	pool.query(sql, (err, result) => {
+		if(err) res.send({status:0})
+		var template = result[0].template;
+		template = JSON.parse(template)
+		console.log("template", template)
+		jsonToDir.traverse(template, "", octokit, {uname,templateName, templateName});
+		res.send({status:1})
+	})
 })
+	
 
 app.get('/listTemps', (req, res) => {
 	console.log("triggered list template")
 	console.log(req)
 	var uname = req.query.uname
-	// console.log(uname)
 	var sql = `select uid from user where uname = '${uname}'`
-	// conn.connect((err) => {
-		// if(err) throw err;
-		pool.query(sql, (err, result) => {
+	pool.query(sql, (err, result) => {
+		if(err) throw err
+		var uid = result[0].uid;
+		sql = `select templateName from repo where uid = ${uid}`
+		console.log(uid)
+		pool.query(sql, (err, result)=>{
 			if(err) throw err
-			var uid = result[0].uid;
-			sql = `select templateName from repo where uid = ${uid}`
-			console.log(uid)
-			pool.query(sql, (err, result)=>{
-				if(err) throw err
-				// console.log(result)
-				arr = []
-				for(var i = 0; i < result.length; i++){
-					arr[arr.length] = result[i].templateName
-				}
-				res.send(JSON.stringify(arr))
-			})
+			// console.log(result)
+			arr = []
+			for(var i = 0; i < result.length; i++){
+				arr[arr.length] = result[i].templateName
+			}
+			res.send(JSON.stringify(arr))
 		})
-	// })
+	})
 })
 
 app.post('/viewTemp', (req, res) => {
 	console.log("triggered view template")	
 	var templateName = req.body.templateName
-	console.log("templateName", templateName)
 	var sql = `select template from repo where templateName = '${templateName}'`
 	// conn.connect((err) => {
 		pool.query(sql, (err, result) => {

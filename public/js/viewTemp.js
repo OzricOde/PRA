@@ -67,11 +67,22 @@ function animate(){
         }
 }
 
+function gitSubmit() {
+    var param = extractUrl();
+    console.log(param)
+    axios.post('http://localhost:8000/gitSubmit',{templateName: param.repoName, token:param.token, uname:param.uname})
+        .then(response => {
+            console.log("ksjhfksdjhfkd", response)
+        })
+        .catch(err => {
+            console.log("man wtf", err)
+        })
+}
+
 function init(){
     var param = extractUrl();
     console.log(param)
-    // console.log("dict", param)
-    axios.post('http://localhost:8000/viewTemp',{templateName: param.repoName})
+    axios.post('http://localhost:8000/viewTemp',{templateName: param.repoName, token:param.token, uname:param.uname})
         .then(response => {
             var jsonString = response.data    
             var json = JSON.parse(jsonString)
