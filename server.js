@@ -86,17 +86,42 @@ app.post('/gitSubmit', (req, res) => {
 	var token = req.body.token
 	var uname = req.body.uname
 	var templateName = req.body.templateName
-	const octokit = new Octokit({auth: `token ${token}`})	
+
+	const octokit = new Octokit({auth: `token ${token}`})
 	
-	var sql = `select template from repo where templateName = '${templateName}'`
-	pool.query(sql, (err, result) => {
-		if(err) res.send({status:0})
-		var template = result[0].template;
-		template = JSON.parse(template)
-		// console.log("template", template)
-		jsonToDir.traverse(template, "", octokit, {uname,templateName, templateName});
-		res.send({status:1})
-	})
+	var test = octokit.repos.createForAuthenticatedUser({
+        name: templateName,
+    })
+		.then(data => {
+			console.log("repo created", data.status)
+			var sql = `select template from repo where templateName = '${templateName}'`
+			pool.query(sql, (err, result) => {
+				if(err) res.send({status:0})
+				var template = result[0].template;
+				template = JSON.parse(template)
+				// console.log("template", template)
+				jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName});
+				console.log("done")
+				res.send({status:1})
+			})
+		})
+		.catch(err => {
+			if(err.status === 422){
+				console.log("repository exists", err.status)
+				var sql = `select template from repo where templateName = '${templateName}'`
+				pool.query(sql, (err, result) => {
+					if(err) res.send({status:0})
+					var template = result[0].template;
+					template = JSON.parse(template)
+					// console.log("template", template)
+					jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName});
+					res.send({status:1})
+				})
+			}
+			else{
+				throw err
+			}
+		})
 })
 	
 
@@ -115,6 +140,7 @@ app.get('/listTemps', (req, res) => {
 			// console.log(result)
 			arr = []
 			for(var i = 0; i < result.length; i++){
+	
 				arr[arr.length] = result[i].templateName
 			}
 			res.send(JSON.stringify(arr))
@@ -130,10 +156,10 @@ app.post('/viewTemp', (req, res) => {
 		pool.query(sql, (err, result) => {
 			if(err) throw err
 			var template = result[0].template;
-				res.send(JSON.stringify(template))
-			
+				res.send(JSON.stringify(template))			
 		})
 })
+
 app.get('/login', (req, res) => {
 	req.session.csrf_string = randomString.generate();
 	const githubAuthUrl =
@@ -189,9 +215,17 @@ app.get('/user/:token', (req, res) => {
     });
 });
 
-app.get('/listAll/:uname/:token', (req, res) => {
-	
+app.get('/listAll/:uname/:token', (req, res) => {	
 	res.sendFile(path.join(__dirname+'/public/redirect.html'))
+})
+
+app.post('/fileContents', (req, res) => {
+	var fileLocation = req.body.fileLocation
+	var contents = fs.readFileSync(fileLocation, 'utf8');
+	contents = String.raw`${contents}`
+	contents = contents.replace(/(\r\n|\n|\r)/gm, "");
+	// console.log(contents)
+	res.send(JSON.stringify(contents))
 })
 
 // octokit.repos.listForUser({
