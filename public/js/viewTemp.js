@@ -12,11 +12,31 @@ function folder(name, parentId){
     return location
 }
 
-function file(name, parentId, iter){
+function file(name, parentId, iter, contents){
     let location = createId(name, parentId, iter)
-    let html = `<li id=${location}>${name}</li>`
+    contents = contents.replace(/\"/g, '-');
+    let html = `<li id=${location}>
+                    <a class="button" href="#popup1" content="${contents}" onclick="getContents(event)">${name}</a>
+                </li>`  
     document.getElementById(parentId).innerHTML += html
+
     return location
+}
+
+function getContents(event) {
+    console.log(event.target)
+    var fileLocation = event.target.getAttribute('content')
+    fileLocation = fileLocation.replace(/-/g, '/');
+    console.log(fileLocation)
+    axios.post('http://localhost:8000/fileContents',{fileLocation: fileLocation})
+        .then(data => {
+            console.log("daat", data.data)
+            document.getElementById("popup2").innerHTML = data.data
+            document.getElementById("popup2").innerHTML += `<a class="close" href="">&times;</a> `
+        })  
+        .catch(err => {
+            console.log("something went wrong")
+        })   
 }
 
 function traverse(jsonObj, parentId, iter) {
@@ -32,7 +52,7 @@ function traverse(jsonObj, parentId, iter) {
                 locationObj = folder(jsonObj.name, parentId)
             }
             else {
-                locationObj = file(jsonObj.name, parentId, iter)
+                locationObj = file(jsonObj.name, parentId, iter, jsonObj.contents)
             }
             traverse(jsonObj.entries, locationObj);
         }      
@@ -81,11 +101,12 @@ function gitSubmit() {
 
 function init(){
     var param = extractUrl();
-    console.log(param)
     axios.post('http://localhost:8000/viewTemp',{templateName: param.repoName, token:param.token, uname:param.uname})
         .then(response => {
-            var jsonString = response.data    
+            var jsonString = response.data
+            console.log(jsonString) 
             var json = JSON.parse(jsonString)
+            console.log("starting taversing", json)
             traverse(json, "root") 
             animate()
         })
