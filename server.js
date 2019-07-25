@@ -13,7 +13,10 @@ const url = require('url');
 const randomString = require('randomstring');
 const Octokit = require('@octokit/rest')
 const jsonToDir = require('./lib/jsonToDir')
+const jenkins = require('jenkins')({ baseUrl: 'http://zaidjan1295:alpha1295@localhost:8080', crumbIssuer: true })
 require('dotenv').config();
+
+//==========================================================================================================
 
 const redirect_uri = process.env.HOST + '/redirect';
 
@@ -32,6 +35,14 @@ app.listen(8000, ()=> {
     console.log('app listening at port 8000');
 });
 
+
+jenkins.info(function(err, data) {
+	if (err) throw err;   
+	console.log('info', data);
+});
+
+//============================================================================================================
+
 app.get('/', (req, res, next) => {
     res.sendFile(__dirname + '/index.html');
 });
@@ -44,6 +55,42 @@ app.use(
 	  saveUninitialized: false
 	})
 );
+
+//==================================================================================================
+
+function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
+	var sql = `select template from repo where templateName = '${templateName}'`
+	pool.query(sql, (err, result) => {
+		if(err) res.send({status:0})
+		var template = result[0].template;
+		template = JSON.parse(template)
+		var files = [];
+		jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName}, files);
+		// asyncCall(octokit, files)
+		// console.log("files", files[0])
+		recLoop(files, octokit, 0)
+		res.send({status:1})
+	})
+}
+
+function recLoop(files, octokit, i){
+	if(i >= files.length)
+		return
+	// console.log(files[i])
+	octokit.repos.createOrUpdateFile(files[i])
+		.then(data => {
+			console.log(data.status)
+			recLoop(files, octokit, i+=1)
+			return
+		})
+		.catch(err => {
+			console.log("err", err.status)
+			recLoop(files, octokit, i+=1)
+			return 
+		})
+}
+
+//===========================================================================================
 
 app.post('/addTemp', (req, res) => {
     var uname = req.body.uname
@@ -93,30 +140,15 @@ app.post('/gitSubmit', (req, res) => {
         name: templateName,
     })
 		.then(data => {
-			console.log("repo created", data.status)
+			console.log("repo created")
 			var sql = `select template from repo where templateName = '${templateName}'`
 			pool.query(sql, (err, result) => {
-				if(err) res.send({status:0})
-				var template = result[0].template;
-				template = JSON.parse(template)
-				// console.log("template", template)
-				jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName});
-				console.log("done")
-				res.send({status:1})
+				doStuff(res, jsonToDir, token, uname, templateName, octokit)
 			})
 		})
 		.catch(err => {
 			if(err.status === 422){
-				console.log("repository exists", err.status)
-				var sql = `select template from repo where templateName = '${templateName}'`
-				pool.query(sql, (err, result) => {
-					if(err) res.send({status:0})
-					var template = result[0].template;
-					template = JSON.parse(template)
-					// console.log("template", template)
-					jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName});
-					res.send({status:1})
-				})
+				doStuff(res, jsonToDir, token, uname, templateName, octokit)
 			}
 			else{
 				throw err
@@ -227,20 +259,19 @@ app.post('/fileContents', (req, res) => {
 	// console.log(contents)
 	res.send(JSON.stringify(contents))
 })
+//=======================================================================================
 
 // octokit.repos.listForUser({
 //   username: 'vanesssapearlss',
 //   }).then(({ data }) => {
 //   console.log({data})
 // })
-
-	
-
+//=========================================
 // octokit.repos.delete({
 //   owner : 'vanesssapearlss',
 //   repo : 'copy'
 // })
-
+//==========================================
 
 
 
