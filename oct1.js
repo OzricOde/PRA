@@ -29,4 +29,3 @@ octokit.repos.createOrUpdateFile({
   path : 'eee/rrr',
   message: 'kjdkjdfb',
   content : 'bXkgbmV3IGZpbGUgY29udGVudHM='
-})
