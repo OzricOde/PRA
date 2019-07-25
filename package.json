@@ -16,6 +16,7 @@
     "express-session": "^1.16.2",
     "fs": "0.0.1-security",
     "html": "^1.0.0",
+    "jenkins": "^0.25.0",
     "js-base64": "^2.5.1",
     "mysql": "^2.17.1",
     "ncp": "^2.0.0",

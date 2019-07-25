@@ -26,7 +26,7 @@ function file(name, parentId, iter, contents){
 function getContents(event) {
     console.log(event.target)
     var fileLocation = event.target.getAttribute('content')
-    fileLocation = fileLocation.replace(/-/g, '/');
+    // fileLocation = fileLocation.replace(/-/g, '/');
     console.log(fileLocation)
     axios.post('http://localhost:8000/fileContents',{fileLocation: fileLocation})
         .then(data => {
@@ -70,6 +70,7 @@ function extractUrl() {
     var tmp;
     for (var i = 0, l = params.length; i < l; i++) {
             tmp = params[i].split('=');
+
             data[tmp[0]] = tmp[1];
     }
     return data
@@ -92,7 +93,13 @@ function gitSubmit() {
     console.log(param)
     axios.post('http://localhost:8000/gitSubmit',{templateName: param.repoName, token:param.token, uname:param.uname})
         .then(response => {
-            console.log("ksjhfksdjhfkd", response)
+            console.log(response)
+            if(response.data.status === 1){
+                document.getElementById("gitLink").innerHTML = `<a href="https://github.com/${param.uname}/${param.repoName}" target="_blank">RepoLink!</a>`
+            }
+            else{
+                document.getElementById("gitLink").innerHTML = `Error Creating Repo`
+            }
         })
         .catch(err => {
             console.log("man wtf", err)
