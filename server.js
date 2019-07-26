@@ -247,8 +247,21 @@ app.get('/user/:token', (req, res) => {
     });
 });
 
-app.get('/listAll/:uname/:token', (req, res) => {	
-	res.sendFile(path.join(__dirname+'/public/redirect.html'))
+app.get('/listAll/:uname/:token', (req, res) => {
+	// console.log(req.params)	
+	var sql = `select uid from user where uname = '${req.params.uname}'`
+	pool.query(sql, (err, result) => {
+		if(err) throw err
+		console.log(result)
+		if(result.length === 0){			
+			sql = `insert into user (uname) VALUES ('${req.params.uname}')`
+			pool.query(sql, (err, result) => {
+				if(err) throw err
+				console.log("inserted new user")
+			})
+		}
+		res.sendFile(path.join(__dirname+'/public/redirect.html'))
+	})	
 })
 
 app.post('/fileContents', (req, res) => {
