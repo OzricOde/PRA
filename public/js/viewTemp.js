@@ -90,8 +90,10 @@ function animate(){
 
 function gitSubmit() {
     var param = extractUrl();
-    console.log(param)
-    axios.post('http://localhost:8000/gitSubmit',{templateName: param.repoName, token:param.token, uname:param.uname})
+    var yaml = document.getElementById("textYaml").value
+    console.log(yaml)
+    // console.log(param)
+    axios.post('http://localhost:8000/gitSubmit',{templateName: param.repoName, token:param.token, uname:param.uname, yaml})
         .then(response => {
             console.log(response)
             if(response.data.status === 1){
@@ -106,13 +108,20 @@ function gitSubmit() {
         })
 }
 
+function toggle(x){
+    if(x.style.visibility === "hidden")
+        x.style.visibility = "visible"
+    else 
+        x.style.visibility = "hidden"
+}
+
 function init(){
     var param = extractUrl();
     axios.post('http://localhost:8000/viewTemp',{templateName: param.repoName, token:param.token, uname:param.uname})
         .then(response => {
-            var jsonString = response.data
-            console.log(jsonString) 
-            var json = JSON.parse(jsonString)
+            var string = response.data
+            console.log(string) 
+            var json = JSON.parse(string.template)
             console.log("starting taversing", json)
             traverse(json, "root") 
             animate()
@@ -121,5 +130,3 @@ function init(){
             console.log("man wtf", err)
         })
 }
-    
-         

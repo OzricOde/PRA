@@ -13,7 +13,7 @@ const url = require('url');
 const randomString = require('randomstring');
 const Octokit = require('@octokit/rest')
 const jsonToDir = require('./lib/jsonToDir')
-const jenkins = require('jenkins')({ baseUrl: 'http://zaidjan1295:alpha1295@localhost:8080', crumbIssuer: true })
+const jenkins = require('jenkins')({ baseUrl: 'http://disha:disha@localhost:8080', crumbIssuer: true })
 require('dotenv').config();
 
 //==========================================================================================================
@@ -36,10 +36,7 @@ app.listen(8000, ()=> {
 });
 
 
-jenkins.info(function(err, data) {
-	if (err) throw err;   
-	console.log('info', data);
-});
+
 
 //============================================================================================================
 
@@ -57,6 +54,55 @@ app.use(
 );
 
 //==================================================================================================
+function editConfig(uname, templateName){
+	var string= `<flow-definition plugin="workflow-job@2.33">
+				<actions/>
+				<description>gfhjkl;</description>
+				<keepDependencies>false</keepDependencies>
+				<properties>
+				<com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.4">
+				<projectUrl>https://github.com/${uname}/${templateName}/</projectUrl>
+				<displayName/>
+				</com.coravy.hudson.plugins.github.GithubProjectProperty>
+				<org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+				<triggers>
+				<com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.4">
+				<spec/>
+				</com.cloudbees.jenkins.GitHubPushTrigger>
+				</triggers>
+				</org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
+				</properties>
+				<definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.72">
+				<script/>
+				<sandbox>true</sandbox>
+				</definition>
+				<triggers/>
+				<disabled>false</disabled>
+				</flow-definition>`
+	return string;
+}
+
+function doOtherStuff(files, templateName, uname){
+	return new Promise((resolve, reject)=>{
+		var sql = `select yaml from git where templateName = '${templateName}'`;
+		var content = ""
+		pool.query(sql, (err, result) => {
+			if(err) reject(err)
+			content = result[0].yaml
+			let buff = new Buffer(content)
+			let base64data = buff.toString('base64');
+			var obj = {
+				owner:uname,
+				repo:templateName,
+				path: `yaml`,
+				message:"yaml",
+				content: base64data
+			}
+			resolve(obj)
+		})
+	})	
+}
+
 
 function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
 	var sql = `select template from repo where templateName = '${templateName}'`
@@ -65,27 +111,55 @@ function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
 		var template = result[0].template;
 		template = JSON.parse(template)
 		var files = [];
-		jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName}, files);
-		// asyncCall(octokit, files)
-		// console.log("files", files[0])
-		recLoop(files, octokit, 0)
-		res.send({status:1})
+		doOtherStuff(files, templateName, uname)
+			.then(data => {
+				files[files.length] = data
+				jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName}, files);
+				recLoop(files, octokit, 0, uname, templateName)
+				res.send({status:1})
+			})
+			.catch(err => {
+				console.log(err)
+			})	
 	})
 }
 
-function recLoop(files, octokit, i){
-	if(i >= files.length)
+function recLoop(files, octokit, i, uname, templateName){
+	if(i === files.length){
+		let jenkinsString = `pipeline {\n agent any\n stages { \n stage('Build') {\n steps {\n sh 'make' (1) \n archiveArtifacts \n artifacts: '**/target/*.jar', fingerprint: true (2) \n} \n} \n}\n }`
+		let buff = new Buffer(jenkinsString)
+		let base64data = buff.toString('base64');
+		var obj = {
+			owner:uname,
+			repo:templateName,
+			path: "jenkins",
+			message:"jenkin",
+			content: base64data
+		}	
+		octokit.repos.createOrUpdateFile(obj)
+			.then(data => {
+				console.log("done upload")
+				var xml = editConfig(uname, templateName)
+				jenkins.job.create(templateName, xml, function(err) {
+					if (err) console.log(err);
+					console.log("job created")
+				});
+			})
+			.catch(err => {
+				console.log(err)
+			})
 		return
-	// console.log(files[i])
+	}
+	if(i > files.length) return 
 	octokit.repos.createOrUpdateFile(files[i])
 		.then(data => {
 			console.log(data.status)
-			recLoop(files, octokit, i+=1)
+			recLoop(files, octokit, i+=1, uname, templateName)
 			return
 		})
 		.catch(err => {
 			console.log("err", err.status)
-			recLoop(files, octokit, i+=1)
+			recLoop(files, octokit, i+=1, uname, templateName)
 			return 
 		})
 }
@@ -128,34 +202,49 @@ app.post('/addTemp', (req, res) => {
 	});
 })
 
-app.post('/gitSubmit', (req, res) => {
+app.post('/gitSubmit', (req, res) => {	
 	console.log("in git submit")
 	var token = req.body.token
 	var uname = req.body.uname
 	var templateName = req.body.templateName
-
 	const octokit = new Octokit({auth: `token ${token}`})
-	
-	var test = octokit.repos.createForAuthenticatedUser({
-        name: templateName,
-    })
-		.then(data => {
-			console.log("repo created")
-			var sql = `select template from repo where templateName = '${templateName}'`
+	var yaml = req.body.yaml
+		var gitUrl = req.body.gitUrl
+		var sql = `select uid from user where uname = '${uname}'`
+		console.log(sql)
+		pool.query(sql, (err, result) => {
+			if(err) throw err
+			var uid = result[0].uid;
+			var sql = `select rid from repo where templateName = '${templateName}'`
+			console.log(sql)
 			pool.query(sql, (err, result) => {
-				doStuff(res, jsonToDir, token, uname, templateName, octokit)
+				if(err) throw err
+				var rid = result[0].rid
+				sql = `insert into git (uid, templateName, yaml, rid) values ('${uid}','${templateName}', '${yaml}', '${rid}')`
+				console.log(sql)
+				pool.query(sql, (err, result)=>{
+					if(err) throw res.send({status:0})
+					var test = octokit.repos.createForAuthenticatedUser({
+						name: templateName,
+					})
+						.then(data => {
+								console.log("repo created")
+								res.send({status:1})
+								doStuff(res, jsonToDir, token, uname, templateName, octokit)
+							})
+						.catch(err => {
+							if(err.status === 422){
+								doStuff(res, jsonToDir, token, uname, templateName, octokit)
+							}
+							else{
+								throw err 
+							}		
+						})
+				})
 			})
-		})
-		.catch(err => {
-			if(err.status === 422){
-				doStuff(res, jsonToDir, token, uname, templateName, octokit)
-			}
-			else{
-				throw err
-			}
-		})
+	})
 })
-	
+
 
 app.get('/listTemps', (req, res) => {
 	console.log("triggered list template")
@@ -171,8 +260,7 @@ app.get('/listTemps', (req, res) => {
 			if(err) throw err
 			// console.log(result)
 			arr = []
-			for(var i = 0; i < result.length; i++){
-	
+			for(var i = 0; i < result.length; i++){	
 				arr[arr.length] = result[i].templateName
 			}
 			res.send(JSON.stringify(arr))
@@ -183,12 +271,12 @@ app.get('/listTemps', (req, res) => {
 app.post('/viewTemp', (req, res) => {
 	console.log("triggered view template")	
 	var templateName = req.body.templateName
-	var sql = `select template from repo where templateName = '${templateName}'`
+	var sql = `select * from repo where templateName = '${templateName}'`
 	// conn.connect((err) => {
 		pool.query(sql, (err, result) => {
 			if(err) throw err
-			var template = result[0].template;
-				res.send(JSON.stringify(template))			
+			var every = result[0];
+				res.send(JSON.stringify(every))			
 		})
 })
 
@@ -247,8 +335,21 @@ app.get('/user/:token', (req, res) => {
     });
 });
 
-app.get('/listAll/:uname/:token', (req, res) => {	
-	res.sendFile(path.join(__dirname+'/public/redirect.html'))
+app.get('/listAll/:uname/:token', (req, res) => {
+	// console.log(req.params)	
+	var sql = `select uid from user where uname = '${req.params.uname}'`
+	pool.query(sql, (err, result) => {
+		if(err) throw err
+		console.log(result)
+		if(result.length === 0){			
+			sql = `insert into user (uname) VALUES ('${req.params.uname}')`
+			pool.query(sql, (err, result) => {
+				if(err) throw err
+				console.log("inserted new user")
+			})
+		}
+		res.sendFile(path.join(__dirname+'/public/redirect.html'))
+	})	
 })
 
 app.post('/fileContents', (req, res) => {
@@ -272,7 +373,3 @@ app.post('/fileContents', (req, res) => {
 //   repo : 'copy'
 // })
 //==========================================
-
-
-
-
