@@ -13,7 +13,7 @@ const url = require('url');
 const randomString = require('randomstring');
 const Octokit = require('@octokit/rest')
 const jsonToDir = require('./lib/jsonToDir')
-const jenkins = require('jenkins')({ baseUrl: 'http://disha:disha@localhost:8080', crumbIssuer: true })
+const jenkins = require('jenkins')({ baseUrl: 'http://zaidjan1295:alpha1295@localhost:8080', crumbIssuer: true })
 require('dotenv').config();
 
 //==========================================================================================================
@@ -223,7 +223,7 @@ app.post('/gitSubmit', (req, res) => {
 				sql = `insert into git (uid, templateName, yaml, rid) values ('${uid}','${templateName}', '${yaml}', '${rid}')`
 				console.log(sql)
 				pool.query(sql, (err, result)=>{
-					if(err) throw res.send({status:0})
+					if(err) res.send({status:0})
 					var test = octokit.repos.createForAuthenticatedUser({
 						name: templateName,
 					})
