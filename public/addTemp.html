@@ -5,14 +5,22 @@
     <link rel="stylesheet" href="./css/navbar.css">
     <script src="js/addTemp.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href='./css/addTemp.css'>
 </head>
-<body>
+<body bgcolor="black">
+    <center>
+    <img src="1.png"></center>
     <nav class="navbar" id="nav"></nav><br>
     <script src="js/navbar.js"></script>
     <div class="form-group">
-    Repo Name:<br><input type="text" name="repoName" id="repoName"><br>
-    File Location:<br><input type="text" name="fileLocation" id="fileLocation"><br>
-    <input type="submit" class="btn btn-primary" value="Submit" onclick="handleClick()">
-    <div id="response"></div>
+    <div id=main>
+        Repo Name:<br><input type="text" placeholder="REPO NAME" name="repoName" id="repoName"><br> <br>
+        File Location:<br><input type="text" placeholder="LOCATION" name="fileLocation" id="fileLocation"><br> <br>
+        <br>
+        <input type="submit" class="btn btn-primary" value="Submit" onclick="handleClick()">
+        <div id="response"></div>
+    </div>
+    </div>     
+    
 </body>
 </html>
