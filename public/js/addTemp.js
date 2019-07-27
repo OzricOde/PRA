@@ -19,7 +19,7 @@ function handleClick() {
     var repoName = document.getElementById('repoName').value
     var fileLocation = document.getElementById('fileLocation').value
     console.log("useraname", username, "reponame", repoName, "filelocation", fileLocation)
-    axios.post('http://localhost:8000/addTemp',{repoName: repoName, fileLocation:fileLocation, uname:username, token:token})
+    axios.post('http://localhost:8000/addTemp',{repoName, fileLocation, uname:username, token})
         .then(response => {
             console.log(response)
             if(response.data.status === 0)
