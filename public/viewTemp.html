@@ -11,6 +11,7 @@
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
   <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="./css/navbar.css">
 </head>
 
@@ -24,14 +25,12 @@
       </div>
     </div>
     <ul id="root"></ul>
-    <script src="js/viewTemp.js"></script>
-    <div id=gitLink></div>
-    <div id=gitStatus></div>
+    <script src="js/viewTemp.js"></script>    
     <div id="configuration">
         Yaml file for Repository<br>
         <textarea rows="4" cols="50" id="textYaml"></textarea>      
     </div>
-    <button type="button" onclick="gitSubmit()">Upload To Github</button>
-      
+    <button type="button" class="w3-btn w3-blue" onclick="gitSubmit()">Upload To Github</button>
+    <div id=gitLink></div>
 </body>
 </html>

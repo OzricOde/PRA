@@ -35,9 +35,6 @@ app.listen(8000, ()=> {
     console.log('app listening at port 8000');
 });
 
-
-
-
 //============================================================================================================
 
 app.get('/', (req, res, next) => {
@@ -126,7 +123,19 @@ function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
 
 function recLoop(files, octokit, i, uname, templateName){
 	if(i === files.length){
-		let jenkinsString = `pipeline {\n agent any\n stages { \n stage('Build') {\n steps {\n sh 'make' (1) \n archiveArtifacts \n artifacts: '**/target/*.jar', fingerprint: true (2) \n} \n} \n}\n }`
+		let jenkinsString = `pipeline { 
+								agent any
+									stages { 
+										stage('Build') {
+											steps {
+												sh 'make' (1)
+												archiveArtifacts
+												artifacts: '**/target/*.jar', 
+												fingerprint: true (2)
+											} 
+										} 
+									}
+								}`
 		let buff = new Buffer(jenkinsString)
 		let base64data = buff.toString('base64');
 		var obj = {
@@ -164,8 +173,7 @@ function recLoop(files, octokit, i, uname, templateName){
 		})
 }
 
-//===========================================================================================
-
+//=================================================================================================================
 app.post('/addTemp', (req, res) => {
     var uname = req.body.uname
     var repoName = req.body.repoName

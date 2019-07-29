@@ -108,13 +108,6 @@ function gitSubmit() {
         })
 }
 
-function toggle(x){
-    if(x.style.visibility === "hidden")
-        x.style.visibility = "visible"
-    else 
-        x.style.visibility = "hidden"
-}
-
 function init(){
     var param = extractUrl();
     axios.post('http://localhost:8000/viewTemp',{templateName: param.repoName, token:param.token, uname:param.uname})

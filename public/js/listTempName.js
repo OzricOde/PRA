@@ -21,9 +21,9 @@ var data = extractUrl();
 function createListItem(name) {
     var uname = data.uname;
     var token = data.token
-    let html = `
-    <li><a href=./viewTemp.html?repoName=${name}&token=${token}&uname=${uname}>${name}</a></li>
-    `
+
+    let html = `<div class="w3-card-4"><header class="w3-container w3-blue">
+      <a href=./viewTemp.html?repoName=${name}&token=${token}&uname=${uname}>${name}</a></div><br>`
     document.getElementById("repoNameList").innerHTML +=  html
 }
 

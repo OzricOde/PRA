@@ -1,4 +1,4 @@
-ul {
+#nav ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
@@ -6,20 +6,20 @@ ul {
   background-color: #333;
 }
 
-body{
+#nav body{
   background-color: white;
 }
 
-li {
+#nav li {
   float: left;
   border-right:1px solid #bbb;
 }
 
-li:last-child {
+#nav li:last-child {
   border-right: none;
 }
 
-li a {
+#nav li a {
   display: block;
   color: white;
   text-align: center;
@@ -27,10 +27,10 @@ li a {
   text-decoration: none;
 }
 
-li a:hover:not(.active) {
+#nav li a:hover:not(.active) {
   background-color: #111;
 }
 
-.active {
+#nav .active {
   background-color: #4CAF50;
 }
