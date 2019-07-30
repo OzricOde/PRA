@@ -293,6 +293,11 @@ app.post('/gitSubmit',(req, res) => {
 })
 
 
+app.get('/editYaml', (req, res) => {
+	//edit hrefs in listTempNames.html
+	//write code to edit yaml
+})
+
 app.get('/listTemps', (req, res) => {
 	console.log("triggered list template")
 	// console.log(req)
@@ -309,6 +314,31 @@ app.get('/listTemps', (req, res) => {
 			arr = []
 			for(var i = 0; i < result.length; i++){	
 				arr[arr.length] = result[i].templateName
+			}
+			res.send(JSON.stringify(arr))
+		})
+	})
+})
+
+app.get('/listGitLink', (req, res) => {
+	console.log("triggered list template")
+	// console.log(req)
+	var uname = req.query.uname
+	var sql = `select uid from user where uname = '${uname}'`
+	pool.query(sql, (err, result) => {
+		if(err) throw err
+		var uid = result[0].uid;
+		sql = `select templateName, gitUrl from git where uid = '${uid}'`
+		console.log(uid)
+		pool.query(sql, (err, result)=>{
+			if(err) throw err
+			console.log(result)
+			arr = []
+			for(var i = 0; i < result.length; i++){	
+				arr[arr.length] = {
+					gitUrl:result[i].gitUrl,
+					templateType:result[i].templateName
+				}
 			}
 			res.send(JSON.stringify(arr))
 		})
