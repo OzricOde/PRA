@@ -88,17 +88,36 @@ function animate(){
         }
 }
 
+function editYaml(randomName){
+    var yaml = `Metadata:
+    Author:Sukesh
+    Git-repo:https://github/sample-project.git
+    Approval:
+        Approved-by: Sukesh
+        Approval-date:07/19/2019 01:00:00
+Job:
+    Job-name:${randomName}
+
+    Config:
+        Preunit-test:yes
+        Postunit-test:no
+        Dev:no`
+    return yaml
+}
+
 function gitSubmit() {
     var param = extractUrl();
-    var yaml = document.getElementById("textYaml").value
+    // var yaml = document.getElementById("textYaml").value
+    
     console.log("yaml", yaml)
     var randomName = Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 7);
+    var yaml = editYaml(randomName)
     // console.log(param)
     axios.post('http://localhost:8000/gitSubmit',{templateName: param.repoName, token:param.token, uname:param.uname, yaml, randomName})
         .then(response => {
             console.log(response)
             if(response.data.status === 1){
-                document.getElementById("gitLink").innerHTML = `<a href="https://github.com/${param.uname}/${randomName}" target="_blank">RepoLink!</a>`
+                document.getElementById("gitLink").innerHTML += `<a href="https://github.com/${param.uname}/${randomName}" target="_blank">RepoLink!<br> </a>`
             }
             else{
                 document.getElementById("gitLink").innerHTML = `Error Creating Repo`

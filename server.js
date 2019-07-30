@@ -14,6 +14,7 @@ const randomString = require('randomstring');
 const Octokit = require('@octokit/rest')
 const jsonToDir = require('./lib/jsonToDir')
 const jenkins = require('jenkins')({ baseUrl: 'http://zaidjan1295:alpha1295@localhost:8080', crumbIssuer: true })
+var sha1 = require('sha1');
 require('dotenv').config();
 
 
@@ -35,6 +36,7 @@ var pool = mysql.createPool({
 app.listen(8000, ()=> {
     console.log('app listening at port 8000');
 });
+
 
 //============================================================================================================
 
@@ -97,7 +99,7 @@ function doOtherStuff(files, templateName, uname, randomName){
 			console.log("base64", base64data)
 			var obj = {
 				owner:uname,
-				repo:templateName,
+				repo:randomName,
 				path: `yaml`,
 				message:"yaml",
 				content: base64data
@@ -240,7 +242,7 @@ app.post('/gitSubmit',(req, res) => {
 	var uname = req.body.uname
 	var templateName = req.body.templateName
 	var randomName = req.body.randomName
-	const octokit = new Octokit({auth: `token ${token}`})
+	let octokit = new Octokit({auth: `token ${token}`})
 	var yaml = req.body.yaml
 	var gitUrl = req.body.gitUrl
 	var sql = `select uid from user where uname = '${uname}'`
@@ -293,9 +295,83 @@ app.post('/gitSubmit',(req, res) => {
 })
 
 
-app.get('/editYaml', (req, res) => {
-	//edit hrefs in listTempNames.html
+app.post('/editYaml', (req, res) => {
 	//write code to edit yaml
+	console.log("herer")
+	console.log(req.body)
+	var gid = req.body.gid
+	var uname = req.body.uname
+	var token = req.body.token
+	// var gitUrl = req.body.gitUrl
+	var sql = `select gitUrl from git where gid = '${gid}'`;
+	pool.query(sql, (err, result) => {
+		if(err) throw err;
+		var gitUrl = result[0].gitUrl
+		console.log("gitUrl", gitUrl)
+		let octokit = new Octokit({auth: `token ${token}`})
+		console.log("gitUrl", gitUrl.replace(`${uname}/`, ""))
+		octokit.repos.getContents({
+			owner:uname,
+			repo: gitUrl.replace(`github.com/${uname}/`, ""),
+			path:"yaml",
+		})
+			.then(data => {
+				var content = data.data.content
+				// console.log(content)
+				var decoded = new Buffer(content, 'base64').toString('ascii')
+				// console.log(decoded)
+				res.send(decoded)
+			})
+			.catch(err => {
+				console.log(err)
+			})
+	})
+})
+
+app.post('/editString', (req,res) => {
+	var option = req.body.options
+	var uname = req.body.uname
+	var gitUrl = req.body.gitUrl
+	var name = gitUrl.replace(`github.com/${uname}/`, '');
+	var token = req.body.token
+	console.log(name)
+	var content = `Metadata:
+    Author:Sukesh
+    Git-repo:https://github.com/${name}.git
+    Approval:
+        Approved-by: Sukesh
+        Approval-date:07/19/2019 01:00:00
+Job:
+    Job-name:${name}
+
+    Config:
+        Preunit-test:${option[0]}
+        Postunit-test:${option[1]}
+		Dev:${option[2]}\n`
+	let octokit = new Octokit({auth: `token ${token}`})
+	let buff = new Buffer(content)
+	let base64data = buff.toString('base64')
+	console.log(uname, name,base64data )
+	// octokit.repos.getCommitRefSha({
+	// 	owner: uname,
+	// 	repo: name,
+	// 	ref
+	// })
+	octokit.repos.createOrUpdateFile({
+		owner: uname,
+		repo: name,
+		path:"yaml",
+		message:"",
+		sha:`8be1e07fece51691a30ab008edb1542bb72fb3d7`,
+		content:base64data,
+	})
+		.then(data => {
+			console.log("udated")
+			console.log(data)
+		})
+		.catch(err => {
+			console.log("err man", err)
+		})
 })
 
 app.get('/listTemps', (req, res) => {
@@ -328,7 +404,7 @@ app.get('/listGitLink', (req, res) => {
 	pool.query(sql, (err, result) => {
 		if(err) throw err
 		var uid = result[0].uid;
-		sql = `select templateName, gitUrl from git where uid = '${uid}'`
+		sql = `select templateName, gitUrl,gid from git where uid = '${uid}'`
 		console.log(uid)
 		pool.query(sql, (err, result)=>{
 			if(err) throw err
@@ -337,13 +413,16 @@ app.get('/listGitLink', (req, res) => {
 			for(var i = 0; i < result.length; i++){	
 				arr[arr.length] = {
 					gitUrl:result[i].gitUrl,
-					templateType:result[i].templateName
+					templateType:result[i].templateName,
+					gid:result[i].gid
 				}
 			}
 			res.send(JSON.stringify(arr))
 		})
 	})
 })
+
+
 
 app.post('/viewTemp', (req, res) => {
 	console.log("triggered view template")	

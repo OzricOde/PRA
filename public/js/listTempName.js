@@ -31,9 +31,9 @@ function createListItemGit(arr){
     console.log(arr)
     var uname = data.uname;
     var token = data.token
-    let html = `<div class="w3-card-4"><header class="w3-container w3-red">
-      <a href=./viewTemp.html?repoName=${arr.templateName}&token=${token}&uname=${uname}>${arr.gitUrl}</a></div>
-      <div class="w3-container"><p>The GitHub Repository Was Created With Template <strong>${arr.templateType}</strong></p></div><br>`
+    let html = `<div class="w3-card-4"><header class="w3-container w3-red"><a href="http://${arr.gitUrl}"  target="_blank">${arr.gitUrl}</a></div>
+      <div class="w3-container"><p>The GitHub Repository Was Created With Template <strong>${arr.templateType}</strong></p>
+      <a href=./editYaml.html?repoName=${arr.templateType}&token=${token}&uname=${uname}&gid=${arr.gid}&gitUrl=${arr.gitUrl} >Edit Yaml</a></div><br>`
     document.getElementById("gitLinks").innerHTML +=  html
 }
 

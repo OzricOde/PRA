@@ -1,0 +1,13 @@
+Metadata:
+    Author:Sukesh
+    Git-repo:https://github/sample-project.git
+    Approval:
+        Approved-by: Sukesh
+        Approval-date:07/19/2019 01:00:00
+Job:
+    Job-name:nibpc
+
+    Config:
+        Preunit-test:yes
+        Postunit-test:no
+        Dev:no
