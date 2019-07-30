@@ -16,6 +16,7 @@ const jsonToDir = require('./lib/jsonToDir')
 const jenkins = require('jenkins')({ baseUrl: 'http://zaidjan1295:alpha1295@localhost:8080', crumbIssuer: true })
 require('dotenv').config();
 
+
 //==========================================================================================================
 
 const redirect_uri = process.env.HOST + '/redirect';
@@ -53,25 +54,31 @@ app.use(
 //==================================================================================================
 function editConfig(uname, templateName){
 	var string= `<flow-definition plugin="workflow-job@2.33">
-				<actions/>
-				<description>gfhjkl;</description>
+				<actions>
+				<org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.3.9"/>
+				</actions>
+				<description/>
 				<keepDependencies>false</keepDependencies>
-				<properties>
-				<com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.29.4">
-				<projectUrl>https://github.com/${uname}/${templateName}/</projectUrl>
-				<displayName/>
-				</com.coravy.hudson.plugins.github.GithubProjectProperty>
-				<org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
-				<triggers>
-				<com.cloudbees.jenkins.GitHubPushTrigger plugin="github@1.29.4">
-				<spec/>
-				</com.cloudbees.jenkins.GitHubPushTrigger>
-				</triggers>
-				</org.jenkinsci.plugins.workflow.job.properties.PipelineTriggersJobProperty>
-				</properties>
-				<definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.72">
-				<script/>
-				<sandbox>true</sandbox>
+				<properties/>
+				<definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.72">
+				<scm class="hudson.plugins.git.GitSCM" plugin="git@3.11.0">
+				<configVersion>2</configVersion>
+				<userRemoteConfigs>
+				<hudson.plugins.git.UserRemoteConfig>
+				<url>https://github.com/${uname}/${templateName}</url>
+				</hudson.plugins.git.UserRemoteConfig>
+				</userRemoteConfigs>
+				<branches>
+				<hudson.plugins.git.BranchSpec>
+				<name>*/master</name>
+				</hudson.plugins.git.BranchSpec>
+				</branches>
+				<doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+				<submoduleCfg class="list"/>
+				<extensions/>
+				</scm>
+				<scriptPath>Jenkinsfile</scriptPath>
+				<lightweight>true</lightweight>
 				</definition>
 				<triggers/>
 				<disabled>false</disabled>
@@ -81,13 +88,13 @@ function editConfig(uname, templateName){
 
 function doOtherStuff(files, templateName, uname){
 	return new Promise((resolve, reject)=>{
-		var sql = `select yaml from git where templateName = '${templateName}'`;
-		var content = ""
-		pool.query(sql, (err, result) => {
+		console.log("doing other stuff")
+		fs.readFile(`./uploads/yaml/${templateName}`, (err, content) => {
 			if(err) reject(err)
-			content = result[0].yaml
+			console.log("file contents", content)
 			let buff = new Buffer(content)
 			let base64data = buff.toString('base64');
+			console.log("base64", base64data)
 			var obj = {
 				owner:uname,
 				repo:templateName,
@@ -97,51 +104,66 @@ function doOtherStuff(files, templateName, uname){
 			}
 			resolve(obj)
 		})
+		
 	})	
 }
 
 
 function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
+	console.log("foing stuuf")
 	var sql = `select template from repo where templateName = '${templateName}'`
 	pool.query(sql, (err, result) => {
-		if(err) res.send({status:0})
+		if(err) {
+			res.send({status:0})
+			throw err
+		}
 		var template = result[0].template;
 		template = JSON.parse(template)
 		var files = [];
 		doOtherStuff(files, templateName, uname)
 			.then(data => {
 				files[files.length] = data
+				// console.log("files==",files)
 				jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName}, files);
 				recLoop(files, octokit, 0, uname, templateName)
 				res.send({status:1})
 			})
 			.catch(err => {
-				console.log(err)
+				throw err
 			})	
 	})
 }
 
 function recLoop(files, octokit, i, uname, templateName){
+	// console.log("i=",i, files[i])
 	if(i === files.length){
-		let jenkinsString = `pipeline { 
-								agent any
-									stages { 
-										stage('Build') {
-											steps {
-												sh 'make' (1)
-												archiveArtifacts
-												artifacts: '**/target/*.jar', 
-												fingerprint: true (2)
-											} 
-										} 
-									}
-								}`
+		// console.log(i, "i==",files.length)
+		let jenkinsString = `pipeline {
+			agent any		  
+			stages {
+				stage('Build') {
+					steps {
+						echo 'Building..'
+					}
+				}
+				stage('Test') {
+					steps {
+						echo 'Testing..'
+					}
+				}
+				stage('Deploy') {
+					steps {
+						echo 'Deploying....'
+					}
+				}
+			}
+		}`
 		let buff = new Buffer(jenkinsString)
 		let base64data = buff.toString('base64');
 		var obj = {
 			owner:uname,
 			repo:templateName,
-			path: "jenkins",
+			path: "Jenkinsfile",
 			message:"jenkin",
 			content: base64data
 		}	
@@ -150,7 +172,7 @@ function recLoop(files, octokit, i, uname, templateName){
 				console.log("done upload")
 				var xml = editConfig(uname, templateName)
 				jenkins.job.create(templateName, xml, function(err) {
-					if (err) console.log(err);
+					if (err) throw err
 					console.log("job created")
 				});
 			})
@@ -174,6 +196,7 @@ function recLoop(files, octokit, i, uname, templateName){
 }
 
 //=================================================================================================================
+
 app.post('/addTemp', (req, res) => {
     var uname = req.body.uname
     var repoName = req.body.repoName
@@ -210,8 +233,13 @@ app.post('/addTemp', (req, res) => {
 	});
 })
 
-app.post('/gitSubmit', (req, res) => {	
+
+app.post('/gitSubmit',(req, res) => {	
+	// console.log(req)
 	console.log("in git submit")
+	// var yaml = req.files[0].filename;
+	// console.log("yaml", yaml)
+	
 	var token = req.body.token
 	var uname = req.body.uname
 	var templateName = req.body.templateName
@@ -219,30 +247,44 @@ app.post('/gitSubmit', (req, res) => {
 	var yaml = req.body.yaml
 		var gitUrl = req.body.gitUrl
 		var sql = `select uid from user where uname = '${uname}'`
-		console.log(sql)
+		// console.log(sql)
 		pool.query(sql, (err, result) => {
 			if(err) throw err
 			var uid = result[0].uid;
 			var sql = `select rid from repo where templateName = '${templateName}'`
-			console.log(sql)
+			// console.log(sql)
 			pool.query(sql, (err, result) => {
 				if(err) throw err
 				var rid = result[0].rid
-				sql = `insert into git (uid, templateName, yaml, rid) values ('${uid}','${templateName}', '${yaml}', '${rid}')`
-				console.log(sql)
+				yaml = String.raw`${yaml}`
+				// console.log(yaml)
+				sql = `insert into git (uid, templateName, rid) values ('${uid}','${templateName}', '${rid}')`
+				// console.log(sql)
 				pool.query(sql, (err, result)=>{
-					if(err) res.send({status:0})
+					if(err){
+						res.send({status:0})
+						throw err
+					} 
 					var test = octokit.repos.createForAuthenticatedUser({
 						name: templateName,
 					})
 						.then(data => {
 								console.log("repo created")
 								res.send({status:1})
-								doStuff(res, jsonToDir, token, uname, templateName, octokit)
+								fs.writeFile(`./uploads/yaml/${templateName}`, yaml, function (err) {
+									if (err) throw err;
+									console.log('Saved!');
+									doStuff(res, jsonToDir, token, uname, templateName, octokit)
+								});
+								
 							})
 						.catch(err => {
-							if(err.status === 422){
-								doStuff(res, jsonToDir, token, uname, templateName, octokit)
+							if(err.status === 422){								
+								fs.writeFile(`./uploads/yaml/${templateName}`, yaml, function (err) {
+									if (err) throw err;
+									console.log('Saved!');
+									doStuff(res, jsonToDir, token, uname, templateName, octokit)
+								});
 							}
 							else{
 								throw err 

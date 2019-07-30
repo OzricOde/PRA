@@ -18,6 +18,7 @@
     "html": "^1.0.0",
     "jenkins": "^0.25.0",
     "js-base64": "^2.5.1",
+    "multer": "^1.4.2",
     "mysql": "^2.17.1",
     "ncp": "^2.0.0",
     "octokit": "^1.0.0-hello-world",
