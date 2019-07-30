@@ -86,10 +86,10 @@ function editConfig(uname, templateName){
 	return string;
 }
 
-function doOtherStuff(files, templateName, uname){
+function doOtherStuff(files, templateName, uname, randomName){
 	return new Promise((resolve, reject)=>{
 		console.log("doing other stuff")
-		fs.readFile(`./uploads/yaml/${templateName}`, (err, content) => {
+		fs.readFile(`./uploads/yaml/${randomName}`, (err, content) => {
 			if(err) reject(err)
 			console.log("file contents", content)
 			let buff = new Buffer(content)
@@ -109,7 +109,7 @@ function doOtherStuff(files, templateName, uname){
 }
 
 
-function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
+function doStuff(res, jsonToDir, token, uname, templateName, octokit, randomName) {
 	console.log("foing stuuf")
 	var sql = `select template from repo where templateName = '${templateName}'`
 	pool.query(sql, (err, result) => {
@@ -120,12 +120,12 @@ function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
 		var template = result[0].template;
 		template = JSON.parse(template)
 		var files = [];
-		doOtherStuff(files, templateName, uname)
+		doOtherStuff(files, templateName, uname, randomName)
 			.then(data => {
 				files[files.length] = data
 				// console.log("files==",files)
-				jsonToDir.traverse(template, "", octokit, {uname, templateName, templateName}, files);
-				recLoop(files, octokit, 0, uname, templateName)
+				jsonToDir.traverse(template, "", octokit, {uname, templateName, randomName}, files);
+				recLoop(files, octokit, 0, uname, templateName, randomName)
 				res.send({status:1})
 			})
 			.catch(err => {
@@ -134,7 +134,7 @@ function doStuff(res, jsonToDir, token, uname, templateName, octokit) {
 	})
 }
 
-function recLoop(files, octokit, i, uname, templateName){
+function recLoop(files, octokit, i, uname, templateName, randomName){
 	// console.log("i=",i, files[i])
 	if(i === files.length){
 		// console.log(i, "i==",files.length)
@@ -162,7 +162,7 @@ function recLoop(files, octokit, i, uname, templateName){
 		let base64data = buff.toString('base64');
 		var obj = {
 			owner:uname,
-			repo:templateName,
+			repo:randomName,
 			path: "Jenkinsfile",
 			message:"jenkin",
 			content: base64data
@@ -170,8 +170,8 @@ function recLoop(files, octokit, i, uname, templateName){
 		octokit.repos.createOrUpdateFile(obj)
 			.then(data => {
 				console.log("done upload")
-				var xml = editConfig(uname, templateName)
-				jenkins.job.create(templateName, xml, function(err) {
+				var xml = editConfig(uname, randomName)
+				jenkins.job.create(randomName, xml, function(err) {
 					if (err) throw err
 					console.log("job created")
 				});
@@ -185,12 +185,12 @@ function recLoop(files, octokit, i, uname, templateName){
 	octokit.repos.createOrUpdateFile(files[i])
 		.then(data => {
 			console.log(data.status)
-			recLoop(files, octokit, i+=1, uname, templateName)
+			recLoop(files, octokit, i+=1, uname, templateName, randomName)
 			return
 		})
 		.catch(err => {
 			console.log("err", err.status)
-			recLoop(files, octokit, i+=1, uname, templateName)
+			recLoop(files, octokit, i+=1, uname, templateName, randomName)
 			return 
 		})
 }
@@ -235,63 +235,60 @@ app.post('/addTemp', (req, res) => {
 
 
 app.post('/gitSubmit',(req, res) => {	
-	// console.log(req)
-	console.log("in git submit")
-	// var yaml = req.files[0].filename;
-	// console.log("yaml", yaml)
-	
+	console.log("in git submit")	
 	var token = req.body.token
 	var uname = req.body.uname
 	var templateName = req.body.templateName
+	var randomName = req.body.randomName
 	const octokit = new Octokit({auth: `token ${token}`})
 	var yaml = req.body.yaml
-		var gitUrl = req.body.gitUrl
-		var sql = `select uid from user where uname = '${uname}'`
-		// console.log(sql)
+	var gitUrl = req.body.gitUrl
+	var sql = `select uid from user where uname = '${uname}'`
+	console.log(sql)
+	pool.query(sql, (err, result) => {
+		if(err) throw err
+		var uid = result[0].uid;
+		var sql = `select rid from repo where templateName = '${templateName}'`
+		console.log(sql)
 		pool.query(sql, (err, result) => {
 			if(err) throw err
-			var uid = result[0].uid;
-			var sql = `select rid from repo where templateName = '${templateName}'`
-			// console.log(sql)
-			pool.query(sql, (err, result) => {
-				if(err) throw err
-				var rid = result[0].rid
-				yaml = String.raw`${yaml}`
-				// console.log(yaml)
-				sql = `insert into git (uid, templateName, rid) values ('${uid}','${templateName}', '${rid}')`
-				// console.log(sql)
-				pool.query(sql, (err, result)=>{
-					if(err){
-						res.send({status:0})
-						throw err
-					} 
-					var test = octokit.repos.createForAuthenticatedUser({
-						name: templateName,
-					})
-						.then(data => {
-								console.log("repo created")
-								res.send({status:1})
-								fs.writeFile(`./uploads/yaml/${templateName}`, yaml, function (err) {
-									if (err) throw err;
-									console.log('Saved!');
-									doStuff(res, jsonToDir, token, uname, templateName, octokit)
-								});
-								
-							})
-						.catch(err => {
-							if(err.status === 422){								
-								fs.writeFile(`./uploads/yaml/${templateName}`, yaml, function (err) {
-									if (err) throw err;
-									console.log('Saved!');
-									doStuff(res, jsonToDir, token, uname, templateName, octokit)
-								});
-							}
-							else{
-								throw err 
-							}		
-						})
+			var rid = result[0].rid
+			yaml = String.raw`${yaml}`
+			console.log(yaml)
+			sql = `insert into git (uid, templateName, gitUrl, rid) values ('${uid}','${templateName}','github.com/${uname}/${randomName}', '${rid}')`
+			console.log(sql)
+			pool.query(sql, (err, result)=>{
+				if(err){
+					res.send({status:0})
+					throw err
+				} 
+				var test = octokit.repos.createForAuthenticatedUser({
+					name: randomName,
 				})
+					.then(data => {
+							console.log("repo created")
+							res.send({status:1})
+							fs.writeFile(`./uploads/yaml/${randomName}`, yaml, function (err) {
+								if (err) throw err;
+								console.log('Saved!');
+								doStuff(res, jsonToDir, token, uname, templateName, octokit, randomName)
+							});
+							
+						})
+					.catch(err => {
+						if(err.status === 422){								
+							fs.writeFile(`./uploads/yaml/${randomName}`, yaml, function (err) {
+								if (err) throw err;
+								console.log('Saved!');
+								doStuff(res, jsonToDir, token, uname, templateName, octokit, randomName)
+							});
+						}
+						else{
+							throw err 
+						}		
+					})
 			})
+		})
 	})
 })
 
